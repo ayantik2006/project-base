@@ -1,0 +1,29 @@
+const express = require("express");
+const cors=require("cors");
+require("dotenv").config();
+const authRoutes=require("./routes/auth.js")
+const cookieParser=require("cookie-parser");
+const mongodb = require("./config/db.js");
+
+const app = express();
+const PORT = process.env.PORT;
+const SECRET_KEY=process.env.SECRET_KEY;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+const frontendURL="http://localhost:5173";
+app.use(
+  cors({
+    origin: [frontendURL], 
+    methods: ["GET", "POST", "PUT", "DELETE"], 
+    credentials: true, 
+  })
+);
+mongodb();
+app.set("view engine","ejs");
+app.use(cookieParser(SECRET_KEY));
+app.use("/auth",authRoutes);
+
+app.listen(PORT, () => {
+  console.log("server live");
+});
