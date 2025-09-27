@@ -26,8 +26,13 @@ mongodb();
 app.set("view engine","ejs");
 app.use(cookieParser(SECRET_KEY));
 app.use("/auth",authRoutes);
-app.get(/^\/.*$/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+app.get(/^(?!\/auth).*/, (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"), (err) => {
+    if (err) {
+      console.error("Error sending index.html:", err);
+      res.status(500).send("Something went wrong");
+    }
+  });
 });
 
 app.listen(PORT, () => {
