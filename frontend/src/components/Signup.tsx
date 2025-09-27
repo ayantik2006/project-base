@@ -146,9 +146,9 @@ function Signup() {
                   duration: 3000,
                 });
               } else if (res.msg === "failure 2") {
-                toast.error("Please try after some time",{
-                  duration:3000
-                })
+                toast.error("Please try after some time", {
+                  duration: 3000,
+                });
               }
             })
             .catch((err) => {

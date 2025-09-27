@@ -1,7 +1,8 @@
 const Account = require("../models/Account.js");
 const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
-const jwt=require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const { getDateTime } = require("../services/getDateTime.js");
 
 exports.getUser = (req, res) => {};
 
@@ -15,6 +16,10 @@ exports.signup = async (req, res) => {
     if (new Date().getTime() / 1000 - userData.linkSentAt > 60) {
       let userData = await Account.findOne({ email: email });
       sendVerificationLink(email, userData._id);
+      await Account.updateOne(
+        { email: email },
+        { linkSentAt: new Date().getTime() / 1000 }
+      );
       return res.json({ msg: "success" });
     } else if (new Date().getTime() / 1000 - userData.linkSentAt <= 60) {
       return res.json({ msg: "failure 2" }); //failure 2: case of existence of an unverified user trying email resend before 1 min
@@ -38,8 +43,9 @@ exports.verification = async (req, res) => {
     !userData.isVerified &&
     new Date().getTime() / 1000 - userData.linkSentAt <= 600
   ) {
-    res.render("../views/verify.ejs");
     await Account.updateOne({ _id: id }, { isVerified: true });
+    await Account.updateOne({ _id: id }, { accountCreationAt: getDateTime() });
+    res.render("../views/verify.ejs");
   } else if (
     !userData.isVerified &&
     new Date().getTime() / 1000 - userData.linkSentAt > 600
@@ -59,11 +65,14 @@ exports.signin = async (req, res) => {
   if (!(await bcrypt.compare(password, userData.password))) {
     return res.json({ msg: "failure" });
   }
+  if (!userData.isVerified) {
+    return res.json({ msg: "failure" });
+  }
   const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
   res.cookie("user", token, {
-    httpOnly: true, 
+    httpOnly: true,
     secure: true, // later convert to true
-    sameSite: "none",  //later convert to none
+    sameSite: "none", //later convert to none
   });
-  return res.json({msg:"success"});
+  return res.json({ msg: "success" });
 };
