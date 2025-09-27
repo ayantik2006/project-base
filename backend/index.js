@@ -12,7 +12,8 @@ const SECRET_KEY=process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../frontend/build')));
+const frontendPath = path.join(__dirname, "..", "frontend", "dist");
+app.use(express.static(frontendPath, { index: false }));
 const frontendURL="https://project-base-frontend.onrender.com";
 app.use(
   cors({
