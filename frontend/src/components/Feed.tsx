@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function Feed() {
   const navigate = useNavigate();
   const location = useLocation();
   const backendURL = "https://project-base-backend.onrender.com";
+  const [isLoggedIn, setIsLoggedIn]=useState(false);
 
   useEffect(() => {
       fetch(backendURL + "/auth/user", {
@@ -15,9 +16,9 @@ function Feed() {
         .then((res) => res.json())
         .then((res) => {
           if (res.msg === "logged out") {
-            navigate("/signin");
+            setIsLoggedIn(false);
           } else if (res.msg !== "logged out") {
-            navigate("/feed");
+            setIsLoggedIn(true);
           }
         })
         .catch((err) => {
@@ -25,9 +26,10 @@ function Feed() {
         });
     }, [navigate, location.pathname]);
   
-  return (
+  if(isLoggedIn)return (
     <div>Feed</div>
   )
+  else navigate("/signin");
 }
 
 export default Feed
