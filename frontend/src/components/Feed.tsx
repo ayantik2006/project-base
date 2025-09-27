@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Signin from "./Signin";
 
 function Feed() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ function Feed() {
   }, [navigate, location.pathname]);
 
   if (isLoggedIn) return <div>Feed</div>;
+  else return <Signin/>
 }
 
 export default Feed;
