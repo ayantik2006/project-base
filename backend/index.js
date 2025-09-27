@@ -25,8 +25,8 @@ mongodb();
 app.set("view engine","ejs");
 app.use(cookieParser(SECRET_KEY));
 app.use("/auth",authRoutes);
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+app.get(/^\/.*$/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
 });
 
 app.listen(PORT, () => {
