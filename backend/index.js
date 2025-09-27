@@ -11,7 +11,7 @@ const SECRET_KEY=process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const frontendURL="http://localhost:5173";
+const frontendURL="https://project-base-frontend.onrender.com";
 app.use(
   cors({
     origin: [frontendURL], 
