@@ -62,8 +62,8 @@ exports.signin = async (req, res) => {
   const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
   res.cookie("user", token, {
     httpOnly: true, 
-    secure: false, // later convert to true
-    sameSite: "strict",  //later convert to none
+    secure: true, // later convert to true
+    sameSite: "none",  //later convert to none
   });
   return res.json({msg:"success"});
 };
