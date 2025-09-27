@@ -8,7 +8,7 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const backendURL = "http://localhost:8080";
+  const backendURL = "https://project-base-backend.onrender.com";
   const emailInput = useRef(null);
   const passwordInput = useRef(null);
 
