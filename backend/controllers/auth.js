@@ -9,7 +9,6 @@ const {
   decodeIdToken,
 } = require("arctic");
 const { google } = require("../lib/oauth/google.js");
-const { use } = require("react");
 const frontendURL = "https://project-base-frontend.onrender.com";
 
 exports.getUser = (req, res) => {};
