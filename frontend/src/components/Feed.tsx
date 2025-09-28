@@ -7,6 +7,7 @@ function Feed() {
   return (
     <div>
       <button
+      className="w-[5rem] h-[2rem] bg-black text-white"
         onClick={() => {
           fetch(backendURL+"/auth/signout",{
             method:"POST",
