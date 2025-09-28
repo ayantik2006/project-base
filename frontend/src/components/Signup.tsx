@@ -207,18 +207,7 @@ function Signup() {
           type="button"
           onClick={()=>{
             console.log("hello to google");
-            fetch(backendURL+"/auth/google",{
-              method:"GET",
-              credentials:"include",
-              headers:{"Content-Type":"application/json"}
-            })
-            .then((res)=>res.json())
-            .then((res)=>{
-              if(res.msg==="logged in"){
-                navigate("/feed")
-              }              
-            })
-            .catch((err)=>{console.log(err)})
+            window.location.href = backendURL+"/auth/google";
           }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />
