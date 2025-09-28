@@ -3,8 +3,13 @@ const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
 const jwt = require("jsonwebtoken");
 const { getDateTime } = require("../services/getDateTime.js");
-const { generateCodeVerifier, generateState, decodeIdToken } = require("arctic");
+const {
+  generateCodeVerifier,
+  generateState,
+  decodeIdToken,
+} = require("arctic");
 const { google } = require("../lib/oauth/google.js");
+const { use } = require("react");
 const frontendURL = "https://project-base-frontend.onrender.com";
 
 exports.getUser = (req, res) => {};
@@ -141,8 +146,30 @@ exports.getGoogleLoginCallback = async (req, res) => {
     return res.redirect(frontendURL + "/signin");
   }
 
-  const claims=decodeIdToken(tokens.idToken());
-  const {sub:googleUserId, name, email}=claims;
-  
-   console.log(email)
+  const claims = decodeIdToken(tokens.idToken());
+  const { sub: googleUserId, name, email } = claims;
+
+  const userData = await Account.findOne({ email: email });
+  if (userData === null) {
+    await Account.create({
+      email: email,
+      isVerified: true,
+      accountCreationAt: getDateTime(),
+    });
+    const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
+    res.cookie("user", token, {
+      httpOnly: true,
+      secure: true, // later convert to true
+      sameSite: "none", //later convert to none
+    });
+    res.redirect(frontendURL+"/feed");
+  } else if (userData !== null) {
+    const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
+    res.cookie("user", token, {
+      httpOnly: true,
+      secure: true, // later convert to true
+      sameSite: "none", //later convert to none
+    });
+    res.redirect(frontendURL+"/feed");
+  }
 };
