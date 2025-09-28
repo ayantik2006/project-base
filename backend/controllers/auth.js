@@ -32,7 +32,7 @@ exports.signup = async (req, res) => {
       email: email,
       password: hashedPassword,
       linkSentAt: new Date().getTime() / 1000,
-    });
+    }); 
     let userData = await Account.findOne({ email: email });
     sendVerificationLink(email, userData._id);
     return res.json({ msg: "success" });
