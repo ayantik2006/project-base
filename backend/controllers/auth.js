@@ -85,7 +85,7 @@ exports.signout = async (req, res) => {
     secure: true,
     sameSite: "none",
   });
-  return;
+  return res.json({msg:"success"});
 };
 
 exports.getGoogleLoginPage = async (req, res) => {
