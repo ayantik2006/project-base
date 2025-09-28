@@ -9,5 +9,6 @@ router.get("/verification/:id",authController.verification);
 router.post("/signin",authController.signin);
 router.post("/signout",authController.signout);
 router.get("/google",authController.getGoogleLoginPage)
+router.get("/google/callback",authController.getGoogleLoginCallback)
 
 module.exports=router;

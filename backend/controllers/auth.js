@@ -3,8 +3,9 @@ const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
 const jwt = require("jsonwebtoken");
 const { getDateTime } = require("../services/getDateTime.js");
-const { generateCodeVerifier, generateState } = require("arctic");
+const { generateCodeVerifier, generateState, decodeIdToken } = require("arctic");
 const { google } = require("../lib/oauth/google.js");
+const frontendURL = "https://project-base-frontend.onrender.com";
 
 exports.getUser = (req, res) => {};
 
@@ -85,7 +86,7 @@ exports.signout = async (req, res) => {
     secure: true,
     sameSite: "none",
   });
-  return res.json({msg:"success"});
+  return res.json({ msg: "success" });
 };
 
 exports.getGoogleLoginPage = async (req, res) => {
@@ -111,4 +112,38 @@ exports.getGoogleLoginPage = async (req, res) => {
     res.cookie("google_code_verifier", codeVerifier, cookieConfig);
     res.redirect(url.toString());
   }
+};
+
+exports.getGoogleLoginCallback = async (req, res) => {
+  const { code, state } = req.query;
+
+  const {
+    google_oauth_state: storedState,
+    google_code_verifier: codeVerifier,
+  } = req.cookies;
+
+  if (
+    !code ||
+    !state ||
+    !storedState ||
+    !codeVerifier ||
+    state !== storedState
+  ) {
+    req.flash("errors", "Could not login!!");
+    return res.redirect(frontendURL + "/signin");
+  }
+
+  let tokens;
+  try {
+    tokens = await google.validateAuthorizationCode(code, codeVerifier);
+  } catch (e) {
+    req.flash("errors", "Could not login!!");
+    return res.redirect(frontendURL + "/signin");
+  }
+
+  const claims=decodeIdToken(tokens.idToken());
+  const {sub:googleUserId, name, email}=claims;
+
+  console.log(email);
+  return res.json({});
 };
