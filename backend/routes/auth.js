@@ -7,5 +7,6 @@ router.post("/user",checkLoggedIn.checkLoggedIn,authController.getUser)
 router.post("/signup",authController.signup)
 router.get("/verification/:id",authController.verification);
 router.post("/signin",authController.signin);
+router.get("/google",authController.getGoogleLoginPage)
 
 module.exports=router;

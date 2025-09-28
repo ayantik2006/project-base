@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
 const jwt = require("jsonwebtoken");
 const { getDateTime } = require("../services/getDateTime.js");
+import {generateCodeVerifier, generateState} from "arctic";
+import { google } from "../lib/oauth/google.js";
+
 
 exports.getUser = (req, res) => {};
 
@@ -75,4 +78,25 @@ exports.signin = async (req, res) => {
     sameSite: "none", //later convert to none
   });
   return res.json({ msg: "success" });
+};
+
+exports.getGoogleLoginPage = async (req, res) => {
+  try {
+    const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+    return res.json({msg:"logged in"})
+  } catch (e) {
+    const state=generateState();
+    const codeVerifier=generateCodeVerifier();
+    const url=google.createAuthorizationURL(state,codeVerifier,["openid","profile","email"]);
+  }
+
+  const cookieConfig={
+    httpOnly:true,
+    secure:true,
+    sameSite:"none"
+  }
+
+  res.cookie("google_oauth_state",state,cookieConfig);
+  res.cookie("google_code_verifier",codeVerifier,cookieConfig);
+  res.redirect(url.toString());
 };
