@@ -202,25 +202,7 @@ function Signup() {
           <p className="mx-1 text-gray-400">or continue with</p>
           <div className="sm:w-30 w-20 h-[0.04rem] bg-gray-400 relative top-3"></div>
         </span>
-        
-        <p className="mt-3 text-gray-600">
-          Already have an account?{" "}
-          <a
-            className="underline cursor-pointer font-bold"
-            onClick={() => {
-              navigate("/signin");
-            }}
-          >
-            Sign in
-          </a>
-        </p>
-        <p className="mt-10 text-[0.9rem] text-gray-600 mx-5">
-          By registering, you accept our{" "}
-          <a className="underline cursor-pointer font-bold">Terms of use</a> and{" "}
-          <a className="underline cursor-pointer font-bold">Privacy Policy</a>
-        </p>
-      </form>
-      <button
+        <button
           className="mt-3 bg-transparent w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer border border-gray-400 flex gap-2 justify-center items-center hover:bg-gray-100 duration-300"
           type="button"
           onClick={()=>{
@@ -240,8 +222,25 @@ function Signup() {
           }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />
-          <p className="text-[1.1rem]">Google</p>
+          <p className="text-[1.1rem]">Google account</p>
         </button>
+        <p className="mt-3 text-gray-600">
+          Already have an account?{" "}
+          <a
+            className="underline cursor-pointer font-bold"
+            onClick={() => {
+              navigate("/signin");
+            }}
+          >
+            Sign in
+          </a>
+        </p>
+        <p className="mt-10 text-[0.9rem] text-gray-600 mx-5">
+          By registering, you accept our{" "}
+          <a className="underline cursor-pointer font-bold">Terms of use</a> and{" "}
+          <a className="underline cursor-pointer font-bold">Privacy Policy</a>
+        </p>
+      </form>
     </div>
   );
 }
