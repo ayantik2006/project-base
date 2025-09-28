@@ -31,7 +31,7 @@ exports.signup = async (req, res) => {
       email: email,
       password: hashedPassword,
       linkSentAt: new Date().getTime() / 1000,
-    }); 
+    });
     let userData = await Account.findOne({ email: email });
     sendVerificationLink(email, userData._id);
     return res.json({ msg: "success" });
@@ -82,20 +82,24 @@ exports.signin = async (req, res) => {
 exports.getGoogleLoginPage = async (req, res) => {
   try {
     const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-    return res.json({msg:"logged in"})
+    return res.json({ msg: "logged in" });
   } catch (e) {
-    const state=generateState();
-    const codeVerifier=generateCodeVerifier();
-    const url=google.createAuthorizationURL(state,codeVerifier,["openid","profile","email"]);
-  }
+    const state = generateState();
+    const codeVerifier = generateCodeVerifier();
+    const url = google.createAuthorizationURL(state, codeVerifier, [
+      "openid",
+      "profile",
+      "email",
+    ]);
 
-  const cookieConfig={
-    httpOnly:true,
-    secure:true,
-    sameSite:"none"
-  }
+    const cookieConfig = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    };
 
-  res.cookie("google_oauth_state",state,cookieConfig);
-  res.cookie("google_code_verifier",codeVerifier,cookieConfig);
-  res.redirect(url.toString());
+    res.cookie("google_oauth_state", state, cookieConfig);
+    res.cookie("google_code_verifier", codeVerifier, cookieConfig);
+    res.redirect(url.toString());
+  }
 };

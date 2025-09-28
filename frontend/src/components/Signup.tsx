@@ -215,8 +215,7 @@ function Signup() {
             .then((res)=>{
               if(res.msg==="logged in"){
                 navigate("/feed")
-              }
-              
+              }              
             })
             .catch((err)=>{console.log(err)})
           }}
