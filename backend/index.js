@@ -17,7 +17,7 @@ app.use(express.static(frontendPath, { index: false }));
 const frontendURL="https://project-base-frontend.onrender.com";
 app.use(
   cors({
-    origin: [frontendURL], 
+    origin: frontendURL, 
     methods: ["GET", "POST", "PUT", "DELETE"], 
     credentials: true, 
   })
