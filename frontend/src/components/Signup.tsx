@@ -206,6 +206,7 @@ function Signup() {
           className="mt-3 bg-transparent w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer border border-gray-400 flex gap-2 justify-center items-center hover:bg-gray-100 duration-300"
           type="button"
           onClick={()=>{
+            console.log("hello");
             fetch(backendURL+"/auth/google",{
               method:"GET",
               credentials:"include",
