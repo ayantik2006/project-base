@@ -222,7 +222,7 @@ function Signup() {
           }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />
-          <p className="text-[1.1rem]">Google account</p>
+          <p className="text-[1.1rem]">Google</p>
         </button>
         <p className="mt-3 text-gray-600">
           Already have an account?{" "}

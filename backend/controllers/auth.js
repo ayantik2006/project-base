@@ -79,6 +79,15 @@ exports.signin = async (req, res) => {
   return res.json({ msg: "success" });
 };
 
+exports.signout = async (req, res) => {
+  res.clearCookie("user", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  return;
+};
+
 exports.getGoogleLoginPage = async (req, res) => {
   try {
     const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
