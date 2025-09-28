@@ -96,7 +96,7 @@ exports.signout = async (req, res) => {
 exports.getGoogleLoginPage = async (req, res) => {
   try {
     const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-    return res.json({ msg: "logged in" });
+    return res.redirect(frontendURL + "/feed");
   } catch (e) {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
