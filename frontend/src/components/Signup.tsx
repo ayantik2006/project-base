@@ -205,6 +205,21 @@ function Signup() {
         <button
           className="mt-3 bg-transparent w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer border border-gray-400 flex gap-2 justify-center items-center hover:bg-gray-100 duration-300"
           type="button"
+          onClick={()=>{
+            fetch(backendURL+"/auth/google",{
+              method:"GET",
+              credentials:"include",
+              headers:{"Content-Type":"application/json"}
+            })
+            .then((res)=>res.json())
+            .then((res)=>{
+              if(res.msg==="logged in"){
+                navigate("/feed")
+              }
+              
+            })
+            .catch((err)=>{console.log(err)})
+          }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />
           <p className="text-[1.1rem]">Google</p>
