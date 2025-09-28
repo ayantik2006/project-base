@@ -1,4 +1,4 @@
-const { Google } = require("arctic/google");
+const { Google } = require("arctic");
 
 exports.google = new Google(
   process.env.GOOGLE_CLIENT_ID,
