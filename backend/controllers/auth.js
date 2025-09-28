@@ -143,7 +143,6 @@ exports.getGoogleLoginCallback = async (req, res) => {
 
   const claims=decodeIdToken(tokens.idToken());
   const {sub:googleUserId, name, email}=claims;
-
-  console.log(email);
-  return res.json({});
+  
+   console.log(email)
 };
