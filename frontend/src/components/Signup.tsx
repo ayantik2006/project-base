@@ -8,7 +8,7 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const backendURL = "https://project-base-backend.onrender.com";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const emailInput = useRef(null);
   const passwordInput = useRef(null);
 

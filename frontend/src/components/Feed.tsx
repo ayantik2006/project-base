@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 function Feed() {
-  const backendURL = "https://project-base-backend.onrender.com";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
 
   return (

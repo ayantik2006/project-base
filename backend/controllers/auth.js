@@ -9,7 +9,11 @@ const {
   decodeIdToken,
 } = require("arctic");
 const { google } = require("../lib/oauth/google.js");
-const frontendURL = "https://project-base-frontend.onrender.com";
+const isProduction = process.env.PRODUCTION === "true";
+
+const frontendURL = isProduction
+  ? "https://project-base-frontend.onrender.com"
+  : "http://localhost:5173";
 
 exports.getUser = (req, res) => {};
 
@@ -78,8 +82,8 @@ exports.signin = async (req, res) => {
   const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
   res.cookie("user", token, {
     httpOnly: true,
-    secure: true, // later convert to true
-    sameSite: "none", //later convert to none
+    secure: isProduction, // later convert to true
+    sameSite: isProduction?"none":"strict", //later convert to none
   });
   return res.json({ msg: "success" });
 };
@@ -87,8 +91,8 @@ exports.signin = async (req, res) => {
 exports.signout = async (req, res) => {
   res.clearCookie("user", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: isProduction,
+    sameSite: isProduction?"none":"strict",
   });
   return res.json({ msg: "success" });
 };
@@ -161,7 +165,7 @@ exports.getGoogleLoginCallback = async (req, res) => {
       secure: true, // later convert to true
       sameSite: "none", //later convert to none
     });
-    res.redirect(frontendURL+"/feed");
+    res.redirect(frontendURL + "/feed");
   } else if (userData !== null) {
     const token = jwt.sign({ id: email }, process.env.SECRET_KEY);
     res.cookie("user", token, {
@@ -169,6 +173,6 @@ exports.getGoogleLoginCallback = async (req, res) => {
       secure: true, // later convert to true
       sameSite: "none", //later convert to none
     });
-    res.redirect(frontendURL+"/feed");
+    res.redirect(frontendURL + "/feed");
   }
 };

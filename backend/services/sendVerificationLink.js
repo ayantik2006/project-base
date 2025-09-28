@@ -1,10 +1,14 @@
 // sendVerificationLink.js
-const sgMail = require('@sendgrid/mail');
+const sgMail = require("@sendgrid/mail");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // SendGrid API key from env
 
 exports.sendVerificationLink = async (receiverEmail, id) => {
-  const backendURL = "https://project-base-backend.onrender.com";
+  const isProduction = process.env.PRODUCTION === "true";
+
+  const backendURL = isProduction
+    ? "https://project-base-backend.onrender.com"
+    : "http://localhost:8080";
 
   const msg = {
     to: receiverEmail,
@@ -26,6 +30,9 @@ exports.sendVerificationLink = async (receiverEmail, id) => {
     await sgMail.send(msg);
     console.log("Email sent successfully!");
   } catch (err) {
-    console.error("Failed to send email", err.response ? err.response.body : err);
+    console.error(
+      "Failed to send email",
+      err.response ? err.response.body : err
+    );
   }
 };

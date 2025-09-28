@@ -11,7 +11,7 @@ import { Navigate } from "react-router-dom";
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const backendURL = "https://project-base-backend.onrender.com";
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetch(backendURL + "/auth/user", {
