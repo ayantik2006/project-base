@@ -3,9 +3,8 @@ const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
 const jwt = require("jsonwebtoken");
 const { getDateTime } = require("../services/getDateTime.js");
-import {generateCodeVerifier, generateState} from "arctic";
-import { google } from "../lib/oauth/google.js";
-
+const { generateCodeVerifier, generateState } = require("arctic");
+const { google } = require("../lib/oauth/google.js");
 
 exports.getUser = (req, res) => {};
 
