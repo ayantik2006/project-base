@@ -3,9 +3,12 @@ import googleIcon from "../assets/google icon.png";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isCaptchaVerified,setIsCaptchaVerified]=useState(false);
+  const [captchaKey,setCaptchaKey]=useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -120,8 +123,12 @@ function Signup() {
       </div>
       <form
         className="min-h-screen flex justify-center items-center flex-col"
-        method="post"
+        method="post" aria-disabled
         onSubmit={(e) => {
+          if(!isCaptchaVerified){
+            e.preventDefault();
+            return;
+          }
           e.preventDefault();
           fetch(backendURL + "/auth/signup", {
             method: "POST",
@@ -130,6 +137,7 @@ function Signup() {
             body: JSON.stringify({
               email: emailInput.current.value,
               password: passwordInput.current.value,
+              captchaKey:captchaKey
             }),
           })
             .then((res) => res.json())
@@ -147,6 +155,11 @@ function Signup() {
                 });
               } else if (res.msg === "failure 2") {
                 toast.error("Please try after some time", {
+                  duration: 3000,
+                });
+              }
+              else if(res.msg==="captcha failure"){
+                toast.error("CAPTCHA verification failed!", {
                   duration: 3000,
                 });
               }
@@ -191,8 +204,14 @@ function Signup() {
             }}
           ></i>
         </span>
+        <div>
+          <ReCAPTCHA className="mt-3" sitekey={import.meta.env.VITE_CAPTCHA_SITE_KEY} onChange={(key)=>{
+            setIsCaptchaVerified(true);
+            setCaptchaKey(key);
+          }} />
+        </div>
         <button
-          className="mt-3 bg-[#9ee86f] w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer hover:bg-[#91d566] duration-300"
+          className={`mt-3 ${!isCaptchaVerified?"bg-[#c3c0c0]":"bg-[#9ee86f]"} w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold ${isCaptchaVerified?"cursor-pointer":""} ${isCaptchaVerified?"hover:bg-[#91d566]":""} duration-300`}
           type="submit"
         >
           Signup
@@ -205,9 +224,9 @@ function Signup() {
         <button
           className="mt-3 bg-transparent w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer border border-gray-400 flex gap-2 justify-center items-center hover:bg-gray-100 duration-300"
           type="button"
-          onClick={()=>{
+          onClick={() => {
             console.log("hello to google");
-            window.location.href = backendURL+"/auth/google";
+            window.location.href = backendURL + "/auth/google";
           }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />

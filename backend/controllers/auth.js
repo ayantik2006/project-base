@@ -18,32 +18,45 @@ const frontendURL = isProduction
 exports.getUser = (req, res) => {};
 
 exports.signup = async (req, res) => {
-  let { email, password } = req.body;
-  let hashedPassword = await bcrypt.hash(password, 10);
-  let userData = await Account.findOne({ email: email });
-  if (userData !== null && userData.isVerified === true) {
-    return res.json({ msg: "failure 1" }); //failure 1: case of existence of a verified user
-  } else if (userData !== null && userData.isVerified === false) {
-    if (new Date().getTime() / 1000 - userData.linkSentAt > 60) {
+  let { email, password, captchaKey } = req.body;
+
+  const captchaSecretKey = process.env.CAPTCHA_SECRET_KEY;
+  const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${captchaSecretKey}&response=${captchaKey}`;
+  try {
+    const response = await fetch(verificationUrl, { method: "POST" });
+    const data = await response.json();
+    if (!data.success) {
+      return res.json({ msg: "captcha failure" });
+    }
+
+    let hashedPassword = await bcrypt.hash(password, 10);
+    let userData = await Account.findOne({ email: email });
+    if (userData !== null && userData.isVerified === true) {
+      return res.json({ msg: "failure 1" }); //failure 1: case of existence of a verified user
+    } else if (userData !== null && userData.isVerified === false) {
+      if (new Date().getTime() / 1000 - userData.linkSentAt > 60) {
+        let userData = await Account.findOne({ email: email });
+        sendVerificationLink(email, userData._id);
+        await Account.updateOne(
+          { email: email },
+          { linkSentAt: new Date().getTime() / 1000 }
+        );
+        return res.json({ msg: "success" });
+      } else if (new Date().getTime() / 1000 - userData.linkSentAt <= 60) {
+        return res.json({ msg: "failure 2" }); //failure 2: case of existence of an unverified user trying email resend before 1 min
+      }
+    } else if (userData === null) {
+      await Account.create({
+        email: email,
+        password: hashedPassword,
+        linkSentAt: new Date().getTime() / 1000,
+      });
       let userData = await Account.findOne({ email: email });
       sendVerificationLink(email, userData._id);
-      await Account.updateOne(
-        { email: email },
-        { linkSentAt: new Date().getTime() / 1000 }
-      );
       return res.json({ msg: "success" });
-    } else if (new Date().getTime() / 1000 - userData.linkSentAt <= 60) {
-      return res.json({ msg: "failure 2" }); //failure 2: case of existence of an unverified user trying email resend before 1 min
     }
-  } else if (userData === null) {
-    await Account.create({
-      email: email,
-      password: hashedPassword,
-      linkSentAt: new Date().getTime() / 1000,
-    });
-    let userData = await Account.findOne({ email: email });
-    sendVerificationLink(email, userData._id);
-    return res.json({ msg: "success" });
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -83,7 +96,7 @@ exports.signin = async (req, res) => {
   res.cookie("user", token, {
     httpOnly: true,
     secure: isProduction, // later convert to true
-    sameSite: isProduction?"none":"strict", //later convert to none
+    sameSite: isProduction ? "none" : "strict", //later convert to none
   });
   return res.json({ msg: "success" });
 };
@@ -92,7 +105,7 @@ exports.signout = async (req, res) => {
   res.clearCookie("user", {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction?"none":"strict",
+    sameSite: isProduction ? "none" : "strict",
   });
   return res.json({ msg: "success" });
 };
