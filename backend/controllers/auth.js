@@ -200,7 +200,7 @@ exports.forgotPassword = async (req, res) => {
   if (userData == null) {
     return res.json({ msg: "failure 1" });
   }
-  if (await bcrypt.compare("", userData.password)) {
+  if (userData.password==="") {
     return res.json({ msg: "failure 2" });
   }
   if (
