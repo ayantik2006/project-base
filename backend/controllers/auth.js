@@ -36,6 +36,7 @@ exports.signup = async (req, res) => {
     } else if (userData !== null && userData.isVerified === false) {
       if (new Date().getTime() / 1000 - userData.linkSentAt > 60) {
         let userData = await Account.findOne({ email: email });
+        await Account.updateOne({email:email},{password:password});
         sendVerificationLink(email, userData._id);
         await Account.updateOne(
           { email: email },
