@@ -3,6 +3,7 @@ import googleIcon from "../assets/google icon.png";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Bars } from "react-loader-spinner";
 
 function Signin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,6 +12,7 @@ function Signin() {
   const emailInput = useRef(null);
   const passwordInput = useRef(null);
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="min-h-screen flex justify-center items-center flex-col">
@@ -123,6 +125,7 @@ function Signin() {
         method="post"
         onSubmit={(e) => {
           e.preventDefault();
+          setLoading(true)
           fetch(backendURL + "/auth/signin", {
             method: "POST",
             credentials: "include",
@@ -135,14 +138,17 @@ function Signin() {
             .then((res) => res.json())
             .then((res) => {
               if (res.msg === "failure") {
+                setLoading(false);
                 toast.error("Incorrect credentials", {
                   duration: 3000,
                 });
               } else if (res.msg === "success") {
-                toast.success("Sign in success");
-                setTimeout(() => {
-                  navigate("/feed");
-                }, 2000);
+                // toast.success("Sign in success");
+                // setTimeout(() => {
+                //   navigate("/feed");
+                // }, 2000);
+                setLoading(false);
+                navigate("/feed");
               }
             })
             .catch((err) => {
@@ -253,6 +259,12 @@ function Signin() {
           </a>
         </p>
       </form>
+
+      {loading && (
+        <div className="fixed inset-0 bg-white bg-opacity-70 flex items-center justify-center z-50">
+          <Bars height={80} width={80} color="#05e641" secondaryColor="white" />
+        </div>
+      )}
     </div>
   );
 }
