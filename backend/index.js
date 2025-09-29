@@ -33,7 +33,7 @@ app.set("view engine", "ejs");
 app.use(cookieParser(SECRET_KEY));
 app.use("/auth", authRoutes);
 
-if (Boolean(process.env.PRODUCTION)) {
+if (isProduction) {
   app.get(/^(?!\/auth).*/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"), (err) => {
       if (err) {

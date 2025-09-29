@@ -1,6 +1,9 @@
 const Account = require("../models/Account.js");
 const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");
+const {
+  sendForgotPasswordLink,
+} = require("../services/sendForgotPasswordLink.js");
 const jwt = require("jsonwebtoken");
 const { getDateTime } = require("../services/getDateTime.js");
 const {
@@ -36,7 +39,7 @@ exports.signup = async (req, res) => {
     } else if (userData !== null && userData.isVerified === false) {
       if (new Date().getTime() / 1000 - userData.linkSentAt > 60) {
         let userData = await Account.findOne({ email: email });
-        await Account.updateOne({email:email},{password:password});
+        await Account.updateOne({ email: email }, { password: password });
         sendVerificationLink(email, userData._id);
         await Account.updateOne(
           { email: email },
@@ -188,5 +191,70 @@ exports.getGoogleLoginCallback = async (req, res) => {
       sameSite: "none", //later convert to none
     });
     res.redirect(frontendURL + "/feed");
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  const email = req.body.email;
+  const userData = await Account.findOne({ email: email });
+  if (userData == null) {
+    return res.json({ msg: "failure 1" });
+  }
+  if (await bcrypt.compare("", userData.password)) {
+    return res.json({ msg: "failure 2" });
+  }
+  if (
+    userData.forgotPasswordLinkSentAt !== 0 &&
+    new Date().getTime() / 1000 - userData.forgotPasswordLinkSentAt <= 60
+  ) {
+    return res.json({ msg: "failure 3" });
+  }
+  await sendForgotPasswordLink(email, userData._id);
+  await Account.updateOne(
+    { email: email },
+    {
+      isForgotPasswordActive: true,
+      forgotPasswordLinkSentAt: new Date().getTime() / 1000,
+    }
+  );
+  return res.json({ msg: "success" });
+};
+
+exports.getForgotPasswordPage = async (req, res) => {
+  const id = req.params.id;
+  const userData = await Account.findOne({ _id: id });
+  if (
+    userData.isForgotPasswordActive &&
+    new Date().getTime() / 1000 - userData.forgotPasswordLinkSentAt <= 600
+  )
+    res.render("../views/forgotPassword.ejs", {
+      backendURL: process.env.BACKEND_URL,
+      id: id,
+    });
+  else if (
+    userData.isForgotPasswordActive &&
+    new Date().getTime() / 1000 - userData.forgotPasswordLinkSentAt > 600
+  ) {
+    res.render("../views/forgotPasswordExpired.ejs");
+  } else if (!userData.isForgotPasswordActive) {
+    res.render("../views/forgotPasswordDone.ejs");
+  }
+};
+
+exports.forgotPasswordReset = async (req, res) => {
+  const { password, id } = req.body;
+  const userData = await Account.findOne({ _id: id });
+  
+  if (!userData.isForgotPasswordActive) {
+    return res.render("../views/forgotPasswordDone.ejs");
+  } else if (
+    userData.isForgotPasswordActive &&
+    new Date().getTime() / 1000 - userData.forgotPasswordLinkSentAt > 600
+  ) {
+    return res.render("../views/forgotPasswordExpired.ejs");
+  }
+  else{
+    await Account.updateOne({_id:id},{password:await bcrypt.hash(password,10),isForgotPasswordActive:false});
+    return res.render("../views/forgotPasswordDone.ejs");
   }
 };

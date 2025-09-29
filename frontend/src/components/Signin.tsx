@@ -10,7 +10,7 @@ function Signin() {
   const navigate = useNavigate();
   const emailInput = useRef(null);
   const passwordInput = useRef(null);
-  const backendURL = import.meta.env.VITE_BACKEND_URL;;
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   return (
     <div className="min-h-screen flex justify-center items-center flex-col">
@@ -138,10 +138,11 @@ function Signin() {
                 toast.error("Incorrect credentials", {
                   duration: 3000,
                 });
-              }
-              else if(res.msg==="success"){
+              } else if (res.msg === "success") {
                 toast.success("Sign in success");
-                setTimeout(()=>{navigate("/feed")},2000);
+                setTimeout(() => {
+                  navigate("/feed");
+                }, 2000);
               }
             })
             .catch((err) => {
@@ -183,6 +184,40 @@ function Signin() {
               setShowPassword(!showPassword);
             }}
           ></i>
+          <div className="flex flex-row-reverse text-[0.9rem] mr-6 mt-2 font-semibold hover:underline text-[#777171]">
+            <a className="cursor-pointer" onClick={()=>{
+              fetch(backendURL+"/auth/forgot-password",{
+                method:"POST",
+                credentials:"include",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({email:emailInput.current.value})
+              })
+              .then((res)=>res.json())
+              .then((res)=>{
+                if(res.msg==="failure 1"){
+                  toast.error("Please enter a valid email!",{
+                    duration:3000
+                  });
+                }
+                else if(res.msg==="failure 2"){
+                  toast.error("Password reset for Google login account is not allowed!",{
+                    duration:3000
+                  });
+                }
+                else if(res.msg==="failure 3"){
+                  toast.error("Please try after some time!",{
+                    duration:3000
+                  });
+                }
+                else if(res.msg==="success"){
+                  toast.success("Please check your inbox for password reset",{
+                    duration:3000
+                  });
+                }
+              })
+              .catch((err)=>{console.log(err)})
+            }}>Forgot password?</a>
+          </div>
         </span>
         <button
           className="mt-3 bg-[#9ee86f] w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer hover:bg-[#91d566] duration-300"
@@ -198,9 +233,9 @@ function Signin() {
         <button
           className="mt-3 bg-transparent w-75 sm:w-100 h-10 rounded-3xl text-[1.05rem] font-semibold cursor-pointer border border-gray-400 flex gap-2 justify-center items-center hover:bg-gray-100 duration-300"
           type="button"
-          onClick={()=>{
+          onClick={() => {
             console.log("hello to google, signin");
-            window.location.href = backendURL+"/auth/google";
+            window.location.href = backendURL + "/auth/google";
           }}
         >
           <img src={googleIcon} alt="google icon" className="w-6 h-6" />
