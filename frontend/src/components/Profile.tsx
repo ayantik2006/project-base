@@ -2,29 +2,29 @@ import defaultAvatar from "../assets/default avatar.jpg";
 import { SquarePen } from "lucide-react";
 import { User } from "lucide-react";
 import { Info } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { Upload } from "lucide-react";
 import { Trash } from "lucide-react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { CircleX } from "lucide-react";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [name, setName] = useState("John Doe");
   const [username, setUsername] = useState("johndoe");
   const [intro, setIntro] = useState("Profile introduction");
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
+  const usernameInput = useRef(null);
+
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
       method: "POST",
@@ -68,9 +68,9 @@ function Profile() {
                   </TooltipPrimitive.Trigger>
 
                   <TooltipPrimitive.Content
-                    side="right" 
-                    align="center" 
-                    sideOffset={4} 
+                    side="right"
+                    align="center"
+                    sideOffset={4}
                     className="shadow-[0_0_6px_gray] text-[0.9rem] border border-gray-300 bg-white text-gray-900 px-3 py-2 rounded-lg"
                   >
                     <p>{intro}</p>
@@ -107,7 +107,37 @@ function Profile() {
                   id="username"
                   className="selection:bg-[#085fd2]"
                   defaultValue={username}
+                  ref={usernameInput}
+                  onInput={() => {
+                    setUsername(usernameInput.current.value)
+                    fetch(backendURL + "/me/username-available", {
+                      method: "POST",
+                      credentials: "include",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        username:usernameInput.current.value
+                      }),
+                    })
+                    .then((res)=>res.json())
+                    .then((res)=>{
+                      if(res.msg==="yes"){
+                        setIsUsernameAvailable(true);
+                      }
+                      else if(res.msg==="no"){
+                        setIsUsernameAvailable(false);
+                      }
+                    })
+                    .catch((err)=>{console.log(err)})
+                  }}
                 />
+                {(username === "johndoe" || !isUsernameAvailable) && (
+                  <Alert className="p-1 border-none">
+                    <AlertDescription className="flex items-center text-red-700 font-semibold text-[0.8rem]">
+                      <CircleX className="w-4" />
+                      Username unavailable!
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <label htmlFor="intro">Profile introduction</label>
                 <Input
                   type="intro"
@@ -119,7 +149,7 @@ function Profile() {
                 <div className="flex justify-center items-center gap-2">
                   <Button
                     type="button"
-                    className="cursor-pointer w-fit h-[1.5rem] p-1 px-2 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
+                    className="cursor-pointer w-fit h-[1.5rem] p-1 px-2 py-3 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
                   >
                     <label
                       htmlFor="avatar-img"
@@ -139,7 +169,7 @@ function Profile() {
                   />
                   <Button
                     variant="outline"
-                    className="cursor-pointer w-fit h-[1.5rem] p-2 px- text-[0.9rem] hover:bg-red-600 hover:text-white"
+                    className="cursor-pointer w-fit h-[1.5rem] p-2 text-[0.9rem] hover:bg-red-600 hover:text-white py-3"
                     type="button"
                   >
                     Remove profile
