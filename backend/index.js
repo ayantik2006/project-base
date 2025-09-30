@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const authRoutes = require("./routes/auth.js");
+const meRoutes = require("./routes/me.js");
 const cookieParser = require("cookie-parser");
 const mongodb = require("./config/db.js");
 const path = require("path");
@@ -32,6 +33,7 @@ mongodb();
 app.set("view engine", "ejs");
 app.use(cookieParser(SECRET_KEY));
 app.use("/auth", authRoutes);
+app.use("/me", meRoutes);
 
 if (isProduction) {
   app.get(/^(?!\/auth).*/, (req, res) => {

@@ -9,6 +9,9 @@ const schema = new mongoose.Schema({
   linkSentAt: { type: Number }, //store time in seconds
   forgotPasswordLinkSentAt: { type: Number, default:0 }, //store time in seconds
   accountCreationAt: { type: String, default: "" },
+  username:{type:String, default:""},
+  name:{type:String, default:""},
+  intro:{type:String, default:""}
 });
 
 module.exports = mongoose.model("Account", schema);

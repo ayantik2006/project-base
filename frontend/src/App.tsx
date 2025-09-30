@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import Feed from "./components/Feed";
 import { Navigate } from "react-router-dom";
+import Profile from "./components/Profile";
 
 function App() {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/feed" element={<Feed />} />
+        <Route path="/me/profile" element={<Profile />} />
       </Routes>
       <Toaster />
     </>
