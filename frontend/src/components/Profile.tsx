@@ -116,10 +116,12 @@ function Profile() {
                   <Info className="w-4 cursor-pointer" />
                 </PopoverTrigger>
                 <PopoverContent
-                side="bottom"
-                align="start"
-                className="p-2"
-                >{intro}</PopoverContent>
+                  side="bottom"
+                  align="start"
+                  className="p-2 w-fit"
+                >
+                  {intro}
+                </PopoverContent>
               </Popover>
               {intro.slice(0, 14) + "..."}
             </div>
@@ -421,7 +423,9 @@ function Profile() {
               Save
             </Button>
           </TabsContent>
-          <TabsContent value="education">education</TabsContent>
+          <TabsContent value="education">
+            
+          </TabsContent>
           <TabsContent value="skills">Skills</TabsContent>
         </Tabs>
       </div>
