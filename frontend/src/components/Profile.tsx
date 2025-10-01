@@ -68,12 +68,25 @@ function Profile() {
       <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
-          <img
-            src={avatarLink}
-            alt="defaultAvatar"
-            ref={avatarImg}
-            className="w-23 rounded-full border-4 border-[#7ac655]"
-          />
+          <div className="flex flex-col items-center gap-1">
+            <img
+              src={avatarLink}
+              alt="defaultAvatar"
+              ref={avatarImg}
+              className="w-23 rounded-full border-4 border-[#7ac655]"
+            />
+            <Button
+              variant="outline"
+              className="cursor-pointer w-fit h-[1.5rem] p-2 text-[0.9rem] hover:bg-red-600 hover:text-white py-3"
+              type="button"
+              onClick={() => {
+                avatarImg.current.src = defaultAvatar;
+              }}
+            >
+              Remove picture
+            </Button>
+          </div>
+
           <div className="flex flex-col">
             <h2 className="font-bold text-[1.3rem] text-center sm:text-left flex items-center justify-center sm:justify-start gap-1">
               <User className="w-4" />
@@ -248,7 +261,7 @@ function Profile() {
                   ref={introInput}
                   defaultValue={intro}
                 />
-                <div className="flex justify-center items-center gap-2">
+                <div className="flex justify-start items-center gap-2">
                   <Button
                     type="button"
                     className="cursor-pointer w-fit h-[1.5rem] p-1 px-2 py-3 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
@@ -283,20 +296,10 @@ function Profile() {
                       avatarReader.readAsDataURL(avatarInput.current.files[0]);
                     }}
                   />
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer w-fit h-[1.5rem] p-2 text-[0.9rem] hover:bg-red-600 hover:text-white py-3"
-                    type="button"
-                    onClick={() => {
-                      avatarImg.current.src = defaultAvatar;
-                    }}
-                  >
-                    Remove picture
-                  </Button>
                 </div>
                 <Button
                   variant="outline"
-                  className={`w-fit ${
+                  className={`w-fit items-start ${
                     isUsernameAvailable && username !== "" && !isProfileSaving
                       ? "cursor-pointer hover:bg-[#66a447] hover:text-white"
                       : "pointer-events-none bg-gray-200"
