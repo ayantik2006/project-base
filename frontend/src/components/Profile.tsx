@@ -1,5 +1,5 @@
 import defaultAvatar from "../assets/default avatar.jpg";
-import { BadgeInfo, BookOpenText, Code, SquarePen } from "lucide-react";
+import { BadgeInfo, BookOpenText, Code, Plus, SquarePen } from "lucide-react";
 import { User } from "lucide-react";
 import { Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -424,7 +424,13 @@ function Profile() {
             </Button>
           </TabsContent>
           <TabsContent value="education">
-            
+            <div className="flex w-full max-w-sm items-center gap-2">
+              <Input type="text" placeholder="Add education" />
+              <Button type="submit" variant="outline" className="flex gap-1 cursor-pointer">
+                <Plus />
+                <p>Add</p>
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="skills">Skills</TabsContent>
         </Tabs>
