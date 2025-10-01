@@ -171,7 +171,7 @@ function Profile() {
                     defaultAvatar.split("src")[1]
                   ) {
                     formData.append("avatar-img", "");
-                    formData.append("isRemoved", "true");console.log(defaultAvatar);
+                    formData.append("isRemoved", "true");console.log(defaultAvatar,avatarImg.current.src);
                   } else {
                     formData.append("avatar-img", "");
                     formData.append("isRemoved", "false");
