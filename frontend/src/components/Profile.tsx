@@ -41,7 +41,7 @@ function Profile() {
   const avatarImg = useRef(null);
   const aboutSaveBtn = useRef(null);
   const aboutInput = useRef(null);
-  const [aboutValue,setAboutValue]=useState("");
+  const [aboutValue, setAboutValue] = useState("");
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -402,7 +402,7 @@ function Profile() {
           </TabsList>
           <TabsContent value="about">
             <Textarea
-              className="ml-1"
+              className="ml-1 w-78"
               placeholder="Write something about you"
               ref={aboutInput}
               defaultValue={aboutValue}
@@ -420,9 +420,9 @@ function Profile() {
                     about: aboutInput.current.value,
                   }),
                 }).then(() => {
-                  toast.success("About section saved!",{duration:3000});
-                  setAboutValue(aboutInput.current.value)
-                })
+                  toast.success("About section saved!", { duration: 3000 });
+                  setAboutValue(aboutInput.current.value);
+                });
               }}
             >
               Save
