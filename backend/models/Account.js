@@ -13,10 +13,11 @@ const schema = new mongoose.Schema({
   name: { type: String, default: "" },
   intro: { type: String, default: "" },
   avatarLink: { type: String, default: "" },
-  followersNum:{ type: Number, default: 0 },
-  followingNum:{ type: Number, default: 0 },
-  postsNum:{ type: Number, default: 0 },
-  projectsNum:{ type: Number, default: 0 },
+  followersNum: { type: Number, default: 0 },
+  followingNum: { type: Number, default: 0 },
+  postsNum: { type: Number, default: 0 },
+  projectsNum: { type: Number, default: 0 },
+  about: { type: String, default: "" },
 });
 
 module.exports = mongoose.model("Account", schema);

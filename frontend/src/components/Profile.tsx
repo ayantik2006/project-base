@@ -1,5 +1,5 @@
 import defaultAvatar from "../assets/default avatar.jpg";
-import { SquarePen } from "lucide-react";
+import { BadgeInfo, BookOpenText, Code, SquarePen } from "lucide-react";
 import { User } from "lucide-react";
 import { Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { Upload } from "lucide-react";
-import { Trash } from "lucide-react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { CircleX } from "lucide-react";
 import toast from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "./ui/textarea";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -38,6 +39,9 @@ function Profile() {
   const introInput = useRef(null);
   const avatarInput = useRef(null);
   const avatarImg = useRef(null);
+  const aboutSaveBtn = useRef(null);
+  const aboutInput = useRef(null);
+  const [aboutValue,setAboutValue]=useState("");
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -57,15 +61,16 @@ function Profile() {
         setFollowingNum(res.followingNum);
         setPostsNum(res.postsNum);
         setProjectsNum(res.projectsNum);
+        setAboutValue(res.about);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [backendURL]);
 
   return (
     <div className="w-screen h-screen flex justify-center">
-      <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5">
+      <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
           <div className="flex flex-col items-center gap-1">
@@ -86,11 +91,11 @@ function Profile() {
                   credentials: "include",
                   headers: { "Content-Type": "application/json" },
                 })
-                .then((res) => res.json())
-                .then((res)=>{
-
-                })
-                .catch((err)=>{console.log(err)})
+                  .then((res) => res.json())
+                  .then((res) => {})
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               Remove picture
@@ -98,7 +103,7 @@ function Profile() {
           </div>
 
           <div className="flex flex-col">
-            <h2 className="font-bold text-[1.3rem] text-center sm:text-left flex items-center justify-center sm:justify-start gap-1">
+            <h2 className="font-bold text-[1.2rem] text-center sm:text-left flex items-center justify-center sm:justify-start gap-1">
               <User className="w-4" />
               {name}
             </h2>
@@ -187,7 +192,7 @@ function Profile() {
                   fetch(backendURL + "/me/edit-profile", {
                     method: "POST",
                     credentials: "include",
-                    body: formData, 
+                    body: formData,
                   })
                     .then((res) => res.json())
                     .then((res) => {
@@ -367,6 +372,65 @@ function Profile() {
           </div>
         </div>
         <hr className="mx-10 border-t-1 border-gray-200" />
+
+        <Tabs defaultValue="about" className="w-fit mt-5 flex">
+          <TabsList className="flex gap-2 flex-wrap h-fit">
+            <TabsTrigger
+              value="about"
+              className="cursor-pointer py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+    hover:bg-gray-100 transition"
+            >
+              <BadgeInfo />
+              About
+            </TabsTrigger>
+            <TabsTrigger
+              value="education"
+              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+    hover:bg-gray-100 transition"
+            >
+              <BookOpenText />
+              Education
+            </TabsTrigger>
+            <TabsTrigger
+              value="skills"
+              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+    hover:bg-gray-100 transition"
+            >
+              <Code />
+              Skills
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="about">
+            <Textarea
+              className="ml-1"
+              placeholder="Write something about you"
+              ref={aboutInput}
+              defaultValue={aboutValue}
+            />
+            <Button
+              className="w-full ml-1 mt-2 text-[1.1rem] cursor-pointer"
+              variant={"outline"}
+              ref={aboutSaveBtn}
+              onClick={() => {
+                fetch(backendURL + "/me/save-about", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    about: aboutInput.current.value,
+                  }),
+                }).then(() => {
+                  toast.success("About section saved!",{duration:3000});
+                  setAboutValue(aboutInput.current.value)
+                })
+              }}
+            >
+              Save
+            </Button>
+          </TabsContent>
+          <TabsContent value="education">education</TabsContent>
+          <TabsContent value="skills">Skills</TabsContent>
+        </Tabs>
       </div>
     </div>
   );

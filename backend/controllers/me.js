@@ -25,6 +25,7 @@ exports.getMeProfileDetails = async (req, res) => {
     followingNum: userData.followersNum,
     postsNum: userData.postsNum,
     projectsNum: userData.projectsNum,
+    about:userData.about
   });
 };
 
@@ -43,7 +44,7 @@ exports.isUsernameAvailable = async (req, res) => {
 exports.editProfile = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
   const { name, username, intro, isRemoved } = req.body;
-  
+
   try {
     const avatarLink = req.file.path;
     await Account.updateOne(
@@ -78,8 +79,15 @@ exports.editProfile = async (req, res) => {
   }
 };
 
-exports.deleteProfilePicture=async(req,res)=>{
+exports.deleteProfilePicture = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-  await Account.updateOne({email:email},{avatarLink:""});
+  await Account.updateOne({ email: email }, { avatarLink: "" });
   return res.json({});
-}
+};
+
+exports.saveAbout = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const about=req.body.about;
+  await Account.updateOne({email:email},{about:about});
+  return res.json({});
+};

@@ -9,7 +9,7 @@ function NotFound() {
       
       <a
         href="/"
-        className="mt-4 px-4 py-2 bg-[#1bd437] text-white rounded-lg hover:bg-[#17af2e] duration-300 font-semibold"
+        className="mt-4 px-4 py-2 bg-[#7ac655] text-white rounded-lg hover:bg-[#69aa49] duration-300 font-semibold"
       >
         Go Home
       </a>

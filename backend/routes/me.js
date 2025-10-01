@@ -11,5 +11,6 @@ router.post("/profile",checkLoggedIn.checkLoggedIn,meController.getMeProfileDeta
 router.post("/username-available",checkLoggedIn.checkLoggedIn,meController.isUsernameAvailable);
 router.post("/edit-profile",upload.single("avatar-img"),meController.editProfile);
 router.post("/delete-profile-picture",meController.deleteProfilePicture);
+router.post("/save-about",checkLoggedIn.checkLoggedIn,meController.saveAbout);
 
 module.exports=router;
