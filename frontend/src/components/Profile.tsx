@@ -163,7 +163,8 @@ function Profile() {
                     avatarImg.current.src.split("src")[1] !==
                     defaultAvatar.split("src")[1]
                   ) {
-                    formData.append("avatar-img", avatarInput.current.files[0]);
+                    formData.append("avatar-img", avatarInput.current.files[0]);console.log(defaultAvatar);
+                    
                     formData.append("isRemoved", "false");
                   } else if (
                     avatarImg.current.src.split("src")[1] ===
