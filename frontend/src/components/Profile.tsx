@@ -218,7 +218,6 @@ function Profile() {
                   required
                   className="selection:bg-[#085fd2]"
                   id="name"
-                  defaultValue={name}
                   ref={nameInput}
                 />
                 <label htmlFor="username">Username</label>
@@ -228,7 +227,6 @@ function Profile() {
                   required
                   id="username"
                   className="selection:bg-[#085fd2]"
-                  defaultValue={finalUsername}
                   ref={usernameInput}
                   onInput={() => {
                     fetch(backendURL + "/me/username-available", {
@@ -269,7 +267,6 @@ function Profile() {
                   id="intro"
                   className="selection:bg-[#085fd2]"
                   ref={introInput}
-                  defaultValue={intro}
                 />
                 <div className="flex justify-start items-center gap-2">
                   <Button
