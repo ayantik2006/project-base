@@ -81,6 +81,16 @@ function Profile() {
               type="button"
               onClick={() => {
                 avatarImg.current.src = defaultAvatar;
+                fetch(backendURL + "/me/delete-profile-picture", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                })
+                .then((res) => res.json())
+                .then((res)=>{
+
+                })
+                .catch((err)=>{console.log(err)})
               }}
             >
               Remove picture

@@ -77,3 +77,9 @@ exports.editProfile = async (req, res) => {
     });
   }
 };
+
+exports.deleteProfilePicture=async(req,res)=>{
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  await Account.updateOne({email:email},{avatarLink:""});
+  return res.json({});
+}
