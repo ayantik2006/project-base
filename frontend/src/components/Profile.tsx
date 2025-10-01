@@ -111,23 +111,16 @@ function Profile() {
               @{finalUsername}
             </a>
             <div className="text-gray-500 text-center sm:text-left inline-flex gap-1 line-clamp-3">
-              <TooltipPrimitive.Provider>
-                <TooltipPrimitive.Root>
-                  <TooltipPrimitive.Trigger asChild>
-                    <Info className="w-4 cursor-pointer" />
-                  </TooltipPrimitive.Trigger>
-
-                  <TooltipPrimitive.Content
-                    side="right"
-                    align="center"
-                    sideOffset={4}
-                    className="shadow-[0_0_6px_gray] text-[0.9rem] border border-gray-300 bg-white text-gray-900 px-3 py-2 rounded-lg"
-                  >
-                    <p>{intro}</p>
-                    {/* Arrow removed */}
-                  </TooltipPrimitive.Content>
-                </TooltipPrimitive.Root>
-              </TooltipPrimitive.Provider>
+              <Popover>
+                <PopoverTrigger>
+                  <Info className="w-4 cursor-pointer" />
+                </PopoverTrigger>
+                <PopoverContent
+                side="bottom"
+                align="start"
+                className="p-2"
+                >{intro}</PopoverContent>
+              </Popover>
               {intro.slice(0, 14) + "..."}
             </div>
           </div>
