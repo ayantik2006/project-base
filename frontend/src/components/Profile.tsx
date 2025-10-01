@@ -373,7 +373,7 @@ function Profile() {
         </div>
         <hr className="mx-10 border-t-1 border-gray-200" />
 
-        <Tabs defaultValue="about" className="w-fit mt-5 flex">
+        <Tabs defaultValue="about" className="mt-5 flex w-78">
           <TabsList className="flex gap-2 flex-wrap h-fit">
             <TabsTrigger
               value="about"
@@ -402,7 +402,7 @@ function Profile() {
           </TabsList>
           <TabsContent value="about">
             <Textarea
-              className="ml-1 w-78"
+              className="ml-1 w-full h-[10rem] overflow-auto"
               placeholder="Write something about you"
               ref={aboutInput}
               defaultValue={aboutValue}
