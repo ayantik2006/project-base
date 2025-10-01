@@ -187,7 +187,7 @@ function Profile() {
                   fetch(backendURL + "/me/edit-profile", {
                     method: "POST",
                     credentials: "include",
-                    body: formData, // ✅ no JSON.stringify
+                    body: formData, 
                   })
                     .then((res) => res.json())
                     .then((res) => {
@@ -311,8 +311,8 @@ function Profile() {
                   variant="outline"
                   className={`w-fit items-start ${
                     isUsernameAvailable && username !== "" && !isProfileSaving
-                      ? "cursor-pointer hover:bg-[#66a447] hover:text-white"
-                      : "pointer-events-none bg-gray-200"
+                      ? "cursor-pointer hover:bg-[#66a447] hover:text-white items-center"
+                      : "pointer-events-none bg-gray-200 items-center"
                   }`}
                   type="submit"
                 >
