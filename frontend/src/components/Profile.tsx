@@ -163,7 +163,7 @@ function Profile() {
                     avatarImg.current.src.split("src")[1] !==
                     defaultAvatar.split("src")[1]
                   ) {
-                    formData.append("avatar-img", avatarInput.current.files[0]);console.log(defaultAvatar);
+                    formData.append("avatar-img", avatarInput.current.files[0]);
                     
                     formData.append("isRemoved", "false");
                   } else if (
@@ -171,7 +171,7 @@ function Profile() {
                     defaultAvatar.split("src")[1]
                   ) {
                     formData.append("avatar-img", "");
-                    formData.append("isRemoved", "true");
+                    formData.append("isRemoved", "true");console.log(defaultAvatar);
                   } else {
                     formData.append("avatar-img", "");
                     formData.append("isRemoved", "false");
