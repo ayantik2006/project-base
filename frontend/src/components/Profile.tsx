@@ -159,23 +159,8 @@ function Profile() {
                   formData.append("name", nameInput.current.value);
                   formData.append("username", usernameInput.current.value);
                   formData.append("intro", introInput.current.value);
-                  if (
-                    avatarImg.current.src.split("src")[1] !==
-                    defaultAvatar.split("src")[1]
-                  ) {
-                    formData.append("avatar-img", avatarInput.current.files[0]);
-                    
-                    formData.append("isRemoved", "false");
-                  } else if (
-                    avatarImg.current.src.split("src")[1] ===
-                    defaultAvatar.split("src")[1]
-                  ) {
-                    formData.append("avatar-img", "");
-                    formData.append("isRemoved", "true");console.log(defaultAvatar,avatarImg.current.src);
-                  } else {
-                    formData.append("avatar-img", "");
-                    formData.append("isRemoved", "false");
-                  }
+                  formData.append("avatar-img", avatarInput.current.files[0]);
+
                   fetch(backendURL + "/me/edit-profile", {
                     method: "POST",
                     credentials: "include",

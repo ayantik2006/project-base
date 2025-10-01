@@ -65,12 +65,12 @@ exports.editProfile = async (req, res) => {
         name: name,
         username: username,
         intro: intro,
-        avatarLink: isRemoved === "true" ? "" : userData.avatarLink,
+        avatarLink: userData.avatarLink,
       }
     );
     return res.json({
       msg: "success",
-      avatarLink: isRemoved === "true" ? "" : userData.avatarLink,
+      avatarLink: userData.avatarLink,
       name: name,
       username: username,
       intro: intro,
