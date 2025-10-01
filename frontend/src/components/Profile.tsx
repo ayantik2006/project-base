@@ -118,7 +118,7 @@ function Profile() {
                 <PopoverContent
                   side="bottom"
                   align="start"
-                  className="p-2 w-fit"
+                  className="p-2 w-80 mx-8"
                 >
                   {intro}
                 </PopoverContent>
