@@ -7,11 +7,16 @@ const schema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   isForgotPasswordActive: { type: Boolean, default: false },
   linkSentAt: { type: Number }, //store time in seconds
-  forgotPasswordLinkSentAt: { type: Number, default:0 }, //store time in seconds
+  forgotPasswordLinkSentAt: { type: Number, default: 0 }, //store time in seconds
   accountCreationAt: { type: String, default: "" },
-  username:{type:String, default:""},
-  name:{type:String, default:""},
-  intro:{type:String, default:""}
+  username: { type: String, default: "johndoe" },
+  name: { type: String, default: "" },
+  intro: { type: String, default: "" },
+  avatarLink: { type: String, default: "" },
+  followersNum:{ type: Number, default: 0 },
+  followingNum:{ type: Number, default: 0 },
+  postsNum:{ type: Number, default: 0 },
+  projectsNum:{ type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Account", schema);

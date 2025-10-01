@@ -16,14 +16,28 @@ import { Upload } from "lucide-react";
 import { Trash } from "lucide-react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { CircleX } from "lucide-react";
+import toast from "react-hot-toast";
+import { Circles } from "react-loader-spinner";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [name, setName] = useState("John Doe");
   const [username, setUsername] = useState("johndoe");
+  const [finalUsername, setFinalUsername] = useState("johndoe");
+  const [avatarLink, setAvatarLink] = useState(defaultAvatar);
   const [intro, setIntro] = useState("Profile introduction");
+  const [dateJoined, setDateJoined] = useState("");
+  const [followersNum, setFollowersNum] = useState(0);
+  const [followingNum, setFollowingNum] = useState(0);
+  const [postsNum, setPostsNum] = useState(0);
+  const [projectsNum, setProjectsNum] = useState(0);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
+  const [isProfileSaving, setIsProfileSaving] = useState(false);
   const usernameInput = useRef(null);
+  const nameInput = useRef(null);
+  const introInput = useRef(null);
+  const avatarInput = useRef(null);
+  const avatarImg = useRef(null);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -34,8 +48,15 @@ function Profile() {
       .then((res) => res.json())
       .then((res) => {
         setName(res.name === "" ? "John Doe" : res.name);
-        setUsername(res.username === "" ? "johndoe" : res.username);
+        setFinalUsername(res.username === "johndoe" ? "johndoe" : res.username);
+        setUsername(res.username === "johndoe" ? "johndoe" : res.username);
         setIntro(res.intro === "" ? "Profile introduction" : res.intro);
+        setAvatarLink(res.avatarLink === "" ? defaultAvatar : res.avatarLink);
+        setDateJoined(res.joined.split(",")[0]);
+        setFollowersNum(res.followersNum);
+        setFollowingNum(res.followingNum);
+        setPostsNum(res.postsNum);
+        setProjectsNum(res.projectsNum);
       })
       .catch((err) => {
         console.log(err);
@@ -48,8 +69,9 @@ function Profile() {
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
           <img
-            src={defaultAvatar}
+            src={avatarLink}
             alt="defaultAvatar"
+            ref={avatarImg}
             className="w-23 rounded-full border-4 border-[#7ac655]"
           />
           <div className="flex flex-col">
@@ -58,9 +80,9 @@ function Profile() {
               {name}
             </h2>
             <a className="cursor-pointer text-gray-500 text-center sm:text-left">
-              @{username}
+              @{finalUsername}
             </a>
-            <p className="text-gray-500 text-center sm:text-left inline-flex gap-1 line-clamp-3">
+            <div className="text-gray-500 text-center sm:text-left inline-flex gap-1 line-clamp-3">
               <TooltipPrimitive.Provider>
                 <TooltipPrimitive.Root>
                   <TooltipPrimitive.Trigger asChild>
@@ -79,9 +101,47 @@ function Profile() {
                 </TooltipPrimitive.Root>
               </TooltipPrimitive.Provider>
               {intro.slice(0, 14) + "..."}
-            </p>
+            </div>
           </div>
-          <Popover>
+          <Popover
+            onOpenChange={(e) => {
+              if (e.valueOf() === false) {
+                fetch(backendURL + "/me/profile", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (res.avatarLink !== "") setAvatarLink(res.avatarLink);
+                    else setAvatarLink(defaultAvatar);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              } else {
+                fetch(backendURL + "/me/username-available", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    username: username,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (res.msg === "yes") {
+                      setIsUsernameAvailable(true);
+                    } else if (res.msg === "no") {
+                      setIsUsernameAvailable(false);
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+            }}
+          >
             <PopoverTrigger asChild>
               <button className="bg-[#7ac655] p-2 rounded-lg font-semibold text-white cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1">
                 <SquarePen className="w-5" />
@@ -89,7 +149,59 @@ function Profile() {
               </button>
             </PopoverTrigger>
             <PopoverContent className="flex flex-col gap-2">
-              <form className="flex flex-col gap-2">
+              <form
+                className="flex flex-col gap-2"
+                encType="multipart/form-data"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsProfileSaving(true);
+                  const formData = new FormData();
+                  formData.append("name", nameInput.current.value);
+                  formData.append("username", usernameInput.current.value);
+                  formData.append("intro", introInput.current.value);
+                  if (
+                    avatarImg.current.src.split("src")[1] !==
+                    defaultAvatar.split("src")[1]
+                  ) {
+                    formData.append("avatar-img", avatarInput.current.files[0]);
+                    formData.append("isRemoved", "false");
+                  } else if (
+                    avatarImg.current.src.split("src")[1] ===
+                    defaultAvatar.split("src")[1]
+                  ) {
+                    formData.append("avatar-img", "");
+                    formData.append("isRemoved", "true");
+                  } else {
+                    formData.append("avatar-img", "");
+                    formData.append("isRemoved", "false");
+                  }
+                  fetch(backendURL + "/me/edit-profile", {
+                    method: "POST",
+                    credentials: "include",
+                    body: formData, // ✅ no JSON.stringify
+                  })
+                    .then((res) => res.json())
+                    .then((res) => {
+                      if (res.msg === "success") {
+                        if (res.avatarLink !== "")
+                          setAvatarLink(res.avatarLink);
+                        else setAvatarLink(defaultAvatar);
+                        toast.success("Profile details saved!", {
+                          duration: 3000,
+                        });
+                        setName(res.name);
+                        setFinalUsername(res.username);
+                        setIntro(res.intro);
+                        setIsProfileSaving(false);
+                      } else if (res.msg === "failure") {
+                        toast.success("Username already set!", {
+                          duration: 3000,
+                        });
+                      }
+                    })
+                    .catch((err) => console.error(err));
+                }}
+              >
                 <label htmlFor="name">Name</label>
                 <Input
                   type="name"
@@ -98,6 +210,7 @@ function Profile() {
                   className="selection:bg-[#085fd2]"
                   id="name"
                   defaultValue={name}
+                  ref={nameInput}
                 />
                 <label htmlFor="username">Username</label>
                 <Input
@@ -106,28 +219,29 @@ function Profile() {
                   required
                   id="username"
                   className="selection:bg-[#085fd2]"
-                  defaultValue={username}
+                  defaultValue={finalUsername}
                   ref={usernameInput}
                   onInput={() => {
-                    setUsername(usernameInput.current.value)
                     fetch(backendURL + "/me/username-available", {
                       method: "POST",
                       credentials: "include",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        username:usernameInput.current.value
+                        username: usernameInput.current.value,
                       }),
                     })
-                    .then((res)=>res.json())
-                    .then((res)=>{
-                      if(res.msg==="yes"){
-                        setIsUsernameAvailable(true);
-                      }
-                      else if(res.msg==="no"){
-                        setIsUsernameAvailable(false);
-                      }
-                    })
-                    .catch((err)=>{console.log(err)})
+                      .then((res) => res.json())
+                      .then((res) => {
+                        if (res.msg === "yes") {
+                          setIsUsernameAvailable(true);
+                          setUsername(usernameInput.current.value);
+                        } else if (res.msg === "no") {
+                          setIsUsernameAvailable(false);
+                        }
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
                   }}
                 />
                 {(username === "johndoe" || !isUsernameAvailable) && (
@@ -145,6 +259,8 @@ function Profile() {
                   required
                   id="intro"
                   className="selection:bg-[#085fd2]"
+                  ref={introInput}
+                  defaultValue={intro}
                 />
                 <div className="flex justify-center items-center gap-2">
                   <Button
@@ -156,32 +272,65 @@ function Profile() {
                       className="flex items-center gap-1 cursor-pointer text-[0.87rem] text-black ml-1"
                     >
                       <Upload className="w-[0.95rem]" />
-                      Upload profile
+                      Upload picture
                     </label>
                   </Button>
                   <Input
                     type="file"
-                    placeholder="Profile introduction"
-                    required
+                    name="avatar-img"
                     className="hidden"
                     accept=".jpg,.png"
                     id="avatar-img"
+                    ref={avatarInput}
+                    onChange={() => {
+                      const avatarReader = new FileReader();
+                      if (avatarInput.current.files[0].size > 2 * 1024 * 1024) {
+                        // >2MB
+                        toast.error("File too large! Please upload below 2MB", {
+                          duration: 3000,
+                        });
+                        return;
+                      }
+                      avatarReader.onload = function (e) {
+                        avatarImg.current.src = e.target.result;
+                      };
+                      avatarReader.readAsDataURL(avatarInput.current.files[0]);
+                    }}
                   />
                   <Button
                     variant="outline"
                     className="cursor-pointer w-fit h-[1.5rem] p-2 text-[0.9rem] hover:bg-red-600 hover:text-white py-3"
                     type="button"
+                    onClick={() => {
+                      avatarImg.current.src = defaultAvatar;
+                    }}
                   >
-                    Remove profile
+                    Remove picture
                   </Button>
                 </div>
                 <Button
                   variant="outline"
-                  className="cursor-pointer w-fit hover:bg-[#66a447] hover:text-white"
+                  className={`w-fit ${
+                    isUsernameAvailable && username !== "" && !isProfileSaving
+                      ? "cursor-pointer hover:bg-[#66a447] hover:text-white"
+                      : "pointer-events-none bg-gray-200"
+                  }`}
                   type="submit"
                 >
                   <Save />
-                  Save
+                  {isProfileSaving ? (
+                    <div className="flex gap-1 items-center">
+                      <Circles
+                        height={20}
+                        width={20}
+                        color="#000"
+                        ariaLabel="loading"
+                      />
+                      <span>Saving</span>
+                    </div>
+                  ) : (
+                    "Save changes"
+                  )}
                 </Button>
               </form>
             </PopoverContent>
@@ -191,23 +340,31 @@ function Profile() {
         <div className="flex flex-wrap mx-10 justify-center">
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
             <p className="text-gray-500 font-semibold">Followers</p>
-            <p className="text-[#73d244] text-[1.3rem] font-bold">150</p>
+            <p className="text-[#73d244] text-[1.3rem] font-bold">
+              {followersNum}
+            </p>
           </div>
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
             <p className="text-gray-500 font-semibold">Following</p>
-            <p className="text-[#73d244] text-[1.3rem] font-bold">100</p>
+            <p className="text-[#73d244] text-[1.3rem] font-bold">
+              {followingNum}
+            </p>
           </div>
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
             <p className="text-gray-500 font-semibold">Posts</p>
-            <p className="text-[#73d244] text-[1.3rem] font-bold">20</p>
+            <p className="text-[#73d244] text-[1.3rem] font-bold">{postsNum}</p>
           </div>
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
             <p className="text-gray-500 font-semibold">Projects</p>
-            <p className="text-[#73d244] text-[1.3rem] font-bold">5</p>
+            <p className="text-[#73d244] text-[1.3rem] font-bold">
+              {projectsNum}
+            </p>
           </div>
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
             <p className="text-gray-500 font-semibold">Joined</p>
-            <p className="text-[#222322] text-[1.3rem] font-bold">Dec 2024</p>
+            <p className="text-[#222322] text-[1.3rem] font-bold">
+              {dateJoined}
+            </p>
           </div>
         </div>
         <hr className="mx-10 border-t-1 border-gray-200" />
