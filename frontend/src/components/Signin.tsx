@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 import { useRef, useState } from "react";
 import googleIcon from "../assets/google icon.png";
 import { useLocation } from "react-router-dom";

@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 const Account = require("../models/Account.js");
 const bcrypt = require("bcrypt");
 const { sendVerificationLink } = require("../services/sendVerificationLink.js");

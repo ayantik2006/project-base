@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 import defaultAvatar from "../assets/default avatar.jpg";
 import { BadgeInfo, BookOpenText, Code, Plus, SquarePen } from "lucide-react";
 import { User } from "lucide-react";

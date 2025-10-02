@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 const sgMail = require("@sendgrid/mail");
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // SendGrid API key from env

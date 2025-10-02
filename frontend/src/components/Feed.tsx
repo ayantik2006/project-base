@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";

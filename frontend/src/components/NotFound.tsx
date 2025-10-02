@@ -1,3 +1,10 @@
+/*
+ * Project: Base
+ * Author: Ayantik Sarkar
+ * Copyright (c) 2025
+ * Licensed under Apache 2.0
+ */
+
 import Lottie from "lottie-react";
 import notFoundAnim from "../assets/404.json";
 
