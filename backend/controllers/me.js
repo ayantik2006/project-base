@@ -31,7 +31,8 @@ exports.getMeProfileDetails = async (req, res) => {
     followingNum: userData.followersNum,
     postsNum: userData.postsNum,
     projectsNum: userData.projectsNum,
-    about:userData.about
+    about: userData.about,
+    education: userData.education,
   });
 };
 
@@ -93,7 +94,26 @@ exports.deleteProfilePicture = async (req, res) => {
 
 exports.saveAbout = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-  const about=req.body.about;
-  await Account.updateOne({email:email},{about:about});
+  const about = req.body.about;
+  await Account.updateOne({ email: email }, { about: about });
   return res.json({});
 };
+
+exports.addEducation = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const education = req.body.education;
+  await Account.updateOne({ email: email }, { education: education });
+  return res.json({});
+};
+
+exports.deleteEducation = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const educationId = req.body.educationId;
+  const userData = await Account.findOne({ email: email });
+  let education = userData.education;
+  education.delete(educationId);
+  await Account.updateOne({ email: email }, { education: education });
+
+  return res.json({ education: education });
+};
+

@@ -22,6 +22,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +38,7 @@ import toast from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "./ui/textarea";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -58,10 +63,8 @@ function Profile() {
   const aboutInput = useRef(null);
   const [aboutValue, setAboutValue] = useState("");
   const [theme, setTheme] = useState("light");
-  const [educationList, setEducationList] = useState([
-    "NIT Rourkela",
-    "SXSDGP",
-  ]);
+  const [educationList, setEducationList] = useState({});
+  const educationInput = useRef(null);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -82,6 +85,9 @@ function Profile() {
         setPostsNum(res.postsNum);
         setProjectsNum(res.projectsNum);
         setAboutValue(res.about);
+        Object.keys(res.education).length !== 0
+          ? setEducationList(res.education)
+          : setEducationList({});
       })
       .catch((err) => {
         console.log(err);
@@ -462,30 +468,74 @@ function Profile() {
             <Textarea
               className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
               placeholder="Add education"
+              ref={educationInput}
             />
             <Button
               className="ml-1 mt-2 cursor-pointer self-start"
               variant={"outline"}
-              onClick={()=>{
-                ``
+              onClick={() => {
+                const uuid = uuidv4();
+                const newEducationList = {
+                  ...educationList,
+                  [uuid]: educationInput.current.value,
+                };
+                setEducationList({
+                  ...educationList,
+                  [uuid]: educationInput.current.value,
+                });
+                fetch(backendURL + "/me/add-education", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    education: newEducationList,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    toast.success("New education added!", { duration: 3000 });
+                    educationInput.current.value="";
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <Plus />
               Add
             </Button>
-            {educationList.map((value, index) => {
+            {[...Object.keys(educationList)].reverse().map((key) => {
               return (
-                <div className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2">
-                  <Textarea className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere">
-                    {value}
-                  </Textarea>
-                  <button className="cursor-pointer   duration-300 font-bold p-1"
-                  onClick={()=>{
-
-                  }}>
-                    <Save className="w-[1rem] font-bold duration-300 text-[#5d9442] hover:scale-[1.2]" />
-                  </button>
-                  <button className="cursor-pointer   duration-300 font-bold mr-1 p-1">
+                <div
+                  className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2"
+                  key={key}
+                >
+                  <Textarea
+                    className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere"
+                    key={key}
+                    value={educationList[key]}
+                    readOnly
+                  ></Textarea>
+                  <button
+                    className="cursor-pointer   duration-300 font-bold mr-1 p-1"
+                    onClick={() => {
+                      fetch(backendURL + "/me/delete-education", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          educationId: key,
+                        }),
+                      })
+                        .then((res) => res.json())
+                        .then((res) => {
+                          setEducationList(res.education);
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                        });
+                    }}
+                  >
                     <Trash2 className="w-[1rem] font-bold hover:text-red-700 duration-300 hover:scale-[1.2]" />
                   </button>
                 </div>
