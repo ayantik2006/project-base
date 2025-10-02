@@ -1,9 +1,8 @@
-/*
- * Project: Base
- * Author: Ayantik Sarkar
- * Copyright (c) 2025
- * Licensed under Apache 2.0
- */
+// Copyright 2025 Ayantik Sarkar
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// See the LICENSE file in the project root for license information.
+// SPDX-License-Identifier: Apache-2.0
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
