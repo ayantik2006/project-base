@@ -1,4 +1,5 @@
 # How to run the Project in your local machine?
+## - Ayantik Sarkar 
 ---
 ## Prerequisites
 - [Download NodeJS](https://nodejs.org/en/download) on your PC
