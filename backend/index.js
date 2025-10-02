@@ -19,11 +19,12 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-if(Boolean(process.env.PRODUCTION)){
+const isProduction = process.env.PRODUCTION === "true";
+
+if(isProduction){
   const frontendPath = path.join(__dirname, "..", "frontend", "dist");
   app.use(express.static(frontendPath, { index: false }));
 }
-const isProduction = process.env.PRODUCTION === "true";
 
 const frontendURL = isProduction
   ? "https://project-base-frontend.onrender.com"
