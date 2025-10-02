@@ -5,7 +5,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import defaultAvatar from "../assets/default avatar.jpg";
-import { BadgeInfo, BookOpenText, Code, Plus, SquarePen } from "lucide-react";
+import {
+  BadgeInfo,
+  BookOpenText,
+  Code,
+  Plus,
+  SquarePen,
+  Trash,
+  Trash2,
+} from "lucide-react";
 import { User } from "lucide-react";
 import { Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -25,6 +33,7 @@ import toast from "react-hot-toast";
 import { Circles } from "react-loader-spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "./ui/textarea";
+import { v4 as uuidv4 } from 'uuid';
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -48,6 +57,11 @@ function Profile() {
   const aboutSaveBtn = useRef(null);
   const aboutInput = useRef(null);
   const [aboutValue, setAboutValue] = useState("");
+  const [theme, setTheme] = useState("light");
+  const [educationList, setEducationList] = useState([
+    "NIT Rourkela",
+    "SXSDGP",
+  ]);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -75,7 +89,11 @@ function Profile() {
   }, [backendURL]);
 
   return (
-    <div className="w-screen h-screen flex justify-center">
+    <div
+      className={`w-screen min-h-screen flex justify-center ${
+        theme === "dark" ? "bg-[#202633] " : ""
+      }`}
+    >
       <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
@@ -374,7 +392,10 @@ function Profile() {
         </div>
         <hr className="mx-10 border-t-1 border-gray-200" />
 
-        <Tabs defaultValue="about" className="mt-5 flex w-78">
+        <Tabs
+          defaultValue="about"
+          className="mt-5 flex items-center justify-center"
+        >
           <TabsList className="flex gap-2 flex-wrap h-fit">
             <TabsTrigger
               value="about"
@@ -400,16 +421,23 @@ function Profile() {
               <Code />
               Skills
             </TabsTrigger>
+            <TabsTrigger
+              value="stuff"
+              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+    hover:bg-gray-100 transition"
+            >
+              Stuff
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="about">
+          <TabsContent value="about" className="w-full flex flex-col">
             <Textarea
-              className="ml-1 w-full h-[10rem] overflow-auto"
+              className="ml-1 w-[full] h-[10rem] overflow-auto"
               placeholder="Write something about you"
               ref={aboutInput}
               defaultValue={aboutValue}
             />
             <Button
-              className="w-full ml-1 mt-2 text-[1.1rem] cursor-pointer"
+              className="ml-1 mt-2 cursor-pointer self-start"
               variant={"outline"}
               ref={aboutSaveBtn}
               onClick={() => {
@@ -426,19 +454,45 @@ function Profile() {
                 });
               }}
             >
+              <Save />
               Save
             </Button>
           </TabsContent>
-          <TabsContent value="education">
-            <div className="flex w-full max-w-sm items-center gap-2">
-              <Input type="text" placeholder="Add education" />
-              <Button type="submit" variant="outline" className="flex gap-1 cursor-pointer">
-                <Plus />
-                <p>Add</p>
-              </Button>
-            </div>
+          <TabsContent value="education" className="w-full flex flex-col">
+            <Textarea
+              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
+              placeholder="Add education"
+            />
+            <Button
+              className="ml-1 mt-2 cursor-pointer self-start"
+              variant={"outline"}
+              onClick={()=>{
+                ``
+              }}
+            >
+              <Plus />
+              Add
+            </Button>
+            {educationList.map((value, index) => {
+              return (
+                <div className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2">
+                  <Textarea className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere">
+                    {value}
+                  </Textarea>
+                  <button className="cursor-pointer   duration-300 font-bold p-1"
+                  onClick={()=>{
+
+                  }}>
+                    <Save className="w-[1rem] font-bold duration-300 text-[#5d9442] hover:scale-[1.2]" />
+                  </button>
+                  <button className="cursor-pointer   duration-300 font-bold mr-1 p-1">
+                    <Trash2 className="w-[1rem] font-bold hover:text-red-700 duration-300 hover:scale-[1.2]" />
+                  </button>
+                </div>
+              );
+            })}
           </TabsContent>
-          <TabsContent value="skills">Skills</TabsContent>
+          <TabsContent value="stuff">Stuff</TabsContent>
         </Tabs>
       </div>
     </div>

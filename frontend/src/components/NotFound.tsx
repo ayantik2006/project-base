@@ -6,19 +6,22 @@
 
 import Lottie from "lottie-react";
 import notFoundAnim from "../assets/404.json";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 function NotFound() {
+  const navigate = useNavigate();
   return (
     <div className="h-screen flex flex-col justify-center items-center text-center">
-      
-        <Lottie animationData={notFoundAnim} loop={true} className="w-[20rem]"/>
-      
-      <a
-        href="/"
-        className="mt-4 px-4 py-2 bg-[#7ac655] text-white rounded-lg hover:bg-[#69aa49] duration-300 font-semibold"
+      <Lottie animationData={notFoundAnim} loop={true} className="w-[20rem]" />
+
+      <Button
+        onClick={() => {navigate("/")}}
+        className="mt-4 px-4 py-2 rounded-lg  duration-300 font-bold cursor-pointer border-2 border-[#aaff00] text-[#93db04] hover:bg-[#aaff00]"
+        variant={"outline"}
       >
         Go Home
-      </a>
+      </Button>
     </div>
   );
 }

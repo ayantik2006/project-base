@@ -24,6 +24,7 @@ const schema = new mongoose.Schema({
   postsNum: { type: Number, default: 0 },
   projectsNum: { type: Number, default: 0 },
   about: { type: String, default: "" },
+  education: { type: Map, of: String },
 });
 
 module.exports = mongoose.model("Account", schema);

@@ -4,7 +4,6 @@
 // See the LICENSE file in the project root for license information.
 // SPDX-License-Identifier: Apache-2.0
 
-
 const mongoose = require("mongoose");
 const isProduction = process.env.PRODUCTION === "true";
 
