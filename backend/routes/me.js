@@ -18,6 +18,7 @@ router.post("/username-available",checkLoggedIn.checkLoggedIn,meController.isUse
 router.post("/edit-profile",upload.single("avatar-img"),meController.editProfile);
 router.post("/delete-profile-picture",meController.deleteProfilePicture);
 router.post("/save-about",checkLoggedIn.checkLoggedIn,meController.saveAbout);
+router.post("/enhance-about",checkLoggedIn.checkLoggedIn,meController.enhanceAbout);
 router.post("/add-education",checkLoggedIn.checkLoggedIn,meController.addEducation);
 router.post("/delete-education",checkLoggedIn.checkLoggedIn,meController.deleteEducation);
 router.post("/add-skill",checkLoggedIn.checkLoggedIn,meController.addSkill);

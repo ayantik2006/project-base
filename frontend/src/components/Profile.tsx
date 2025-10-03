@@ -14,6 +14,7 @@ import {
   SquarePen,
   Trash,
   Trash2,
+  WandSparkles,
   X,
 } from "lucide-react";
 import { User } from "lucide-react";
@@ -69,6 +70,8 @@ function Profile() {
   const [skillList, setSkillList] = useState({});
   const educationInput = useRef(null);
   const skillInput = useRef(null);
+  const [introCharCount, setIntroCharCount] = useState(0);
+  const [aboutCharCount, setAboutCharCount] = useState(0);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -82,6 +85,7 @@ function Profile() {
         setFinalUsername(res.username === "johndoe" ? "johndoe" : res.username);
         setUsername(res.username === "johndoe" ? "johndoe" : res.username);
         setIntro(res.intro === "" ? "Profile introduction" : res.intro);
+        setIntroCharCount(intro.length);
         setAvatarLink(res.avatarLink === "" ? defaultAvatar : res.avatarLink);
         setDateJoined(res.joined.split(",")[0]);
         setFollowersNum(res.followersNum);
@@ -89,6 +93,7 @@ function Profile() {
         setPostsNum(res.postsNum);
         setProjectsNum(res.projectsNum);
         setAboutValue(res.about);
+        setAboutCharCount(aboutValue.length);
         Object.keys(res.education).length !== 0
           ? setEducationList(res.education)
           : setEducationList({});
@@ -99,7 +104,7 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-  }, [backendURL]);
+  }, [aboutValue.length, backendURL, intro.length]);
 
   return (
     <div
@@ -184,6 +189,7 @@ function Profile() {
                     console.log(err);
                   });
               } else {
+                setIntroCharCount(intro.length);
                 fetch(backendURL + "/me/username-available", {
                   method: "POST",
                   credentials: "include",
@@ -304,14 +310,20 @@ function Profile() {
                 )}
                 <label htmlFor="intro">Profile introduction</label>
                 <Textarea
-                  type="intro"
                   placeholder="Profile introduction"
                   required
                   id="intro"
                   className="selection:bg-[#085fd2]"
                   ref={introInput}
                   defaultValue={intro}
+                  maxLength={150}
+                  onInput={() => {
+                    setIntroCharCount(introInput.current.value.length);
+                  }}
                 />
+                <p className="text-[#979696] text-[0.85rem] font-semibold mt-[-0.4rem] ml-auto">
+                  {introCharCount}/150
+                </p>
                 <div className="flex justify-start items-center gap-2">
                   <Button
                     type="button"
@@ -412,6 +424,11 @@ function Profile() {
         <Tabs
           defaultValue="about"
           className="mt-5 flex items-center justify-center"
+          onValueChange={(value)=>{
+            if(value==="about"){
+              setAboutCharCount(aboutValue.length);
+            }
+          }}
         >
           <TabsList className="flex gap-2 flex-wrap h-fit">
             <TabsTrigger
@@ -453,28 +470,63 @@ function Profile() {
               placeholder="Write something about you"
               ref={aboutInput}
               defaultValue={aboutValue}
-            />
-            <Button
-              className="ml-1 mt-2 cursor-pointer self-start"
-              variant={"outline"}
-              ref={aboutSaveBtn}
-              onClick={() => {
-                fetch(backendURL + "/me/save-about", {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    about: aboutInput.current.value,
-                  }),
-                }).then(() => {
-                  toast.success("About section saved!", { duration: 3000 });
-                  setAboutValue(aboutInput.current.value);
-                });
+              maxLength={400}
+              onInput={() => {
+                setAboutCharCount(aboutInput.current.value.length);
               }}
-            >
-              <Save />
-              Save
-            </Button>
+            />
+            <p className="text-[#979696] text-[0.85rem] font-semibold ml-auto">
+              {aboutCharCount}/400
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                className="ml-1 mt-2 cursor-pointer self-start"
+                variant={"outline"}
+                ref={aboutSaveBtn}
+                onClick={() => {
+                  fetch(backendURL + "/me/save-about", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      about: aboutInput.current.value,
+                    }),
+                  }).then(() => {
+                    toast.success("About section saved!", { duration: 3000 });
+                    setAboutValue(aboutInput.current.value);
+                  });
+                }}
+              >
+                <Save />
+                Save
+              </Button>
+              <Button
+                variant={"outline"}
+                className="mt-[0.5rem] cursor-pointer"
+                onClick={() => {
+                  fetch(backendURL + "/me/enhance-about", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      about: aboutInput.current.value,
+                    }),
+                  })
+                    .then((res) => res.json())
+                    .then((res) => {
+                      toast.error("Will implement later as it requires 5$!!", {
+                        duration: 3000,
+                      });
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }}
+              >
+                <WandSparkles />
+                <p>AI Enhance</p>
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="education" className="w-full flex flex-col">
             <Textarea

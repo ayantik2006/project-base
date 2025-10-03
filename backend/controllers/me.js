@@ -100,6 +100,11 @@ exports.saveAbout = async (req, res) => {
   return res.json({});
 };
 
+exports.enhanceAbout = async (req, res) => {
+  const about = req.body.about;
+  return res.json({});
+};
+
 exports.addEducation = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
   const recentAddedEducation = req.body.recentAddedEducation;
