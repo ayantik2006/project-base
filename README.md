@@ -4,6 +4,12 @@
 
 ---
 
+## Current Contributers-
+
+1.  Ayantik Sarkar
+2.  Arka Pal
+3.  Shuvam Sathapathi
+
 ## ✨ Features
 
 - 🎯 **Developer & Interview Support**  
