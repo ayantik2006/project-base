@@ -534,11 +534,11 @@ function Profile() {
             {[...Object.keys(educationList)].reverse().map((key) => {
               return (
                 <div
-                  className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2"
+                  className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2 hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.01] duration-300 cursor-auto"
                   key={key}
                 >
                   <Textarea
-                    className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere"
+                    className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere cursor-auto"
                     key={key}
                     value={educationList[key]}
                     readOnly
@@ -629,7 +629,7 @@ function Profile() {
               {Object.keys(skillList).map((key) => {
                 return (
                   <div
-                    className="bg-[#7ac655] text-white font-semibold p-1 px-2 rounded-lg flex gap-2 items-center justify-center"
+                    className="bg-[#7ac655] text-white font-semibold p-1 px-2 rounded-lg flex gap-2 items-center justify-center duration-300 hover:scale-[1.04] cursor-auto"
                     key={key}
                   >
                     {skillList[key]}
