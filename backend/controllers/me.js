@@ -101,6 +101,10 @@ exports.saveAbout = async (req, res) => {
 
 exports.addEducation = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const recentAddedEducation = req.body.recentAddedEducation;
+  if (recentAddedEducation.trim() === "") {
+    return res.json({ msg: "failure" });
+  }
   const education = req.body.education;
   await Account.updateOne({ email: email }, { education: education });
   return res.json({});
@@ -116,4 +120,3 @@ exports.deleteEducation = async (req, res) => {
 
   return res.json({ education: education });
 };
-

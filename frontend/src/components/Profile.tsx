@@ -8,6 +8,7 @@ import defaultAvatar from "../assets/default avatar.jpg";
 import {
   BadgeInfo,
   BookOpenText,
+  BriefcaseBusiness,
   Code,
   Plus,
   SquarePen,
@@ -112,7 +113,7 @@ function Profile() {
             />
             <Button
               variant="outline"
-              className="cursor-pointer w-fit h-[1.5rem] p-2 text-[0.9rem] hover:bg-red-600 hover:text-white py-3"
+              className="cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2"
               type="button"
               onClick={() => {
                 avatarImg.current.src = defaultAvatar;
@@ -122,13 +123,17 @@ function Profile() {
                   headers: { "Content-Type": "application/json" },
                 })
                   .then((res) => res.json())
-                  .then((res) => {})
+                  .then((res) => {
+                    toast.success("Profile picture removed!", {
+                      duration: 3000,
+                    });
+                  })
                   .catch((err) => {
                     console.log(err);
                   });
               }}
             >
-              Remove picture
+              Remove
             </Button>
           </div>
 
@@ -196,8 +201,8 @@ function Profile() {
             }}
           >
             <PopoverTrigger asChild>
-              <button className="bg-[#7ac655] p-2 rounded-lg font-semibold text-white cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1">
-                <SquarePen className="w-5" />
+              <button className="bg-[#7ac655] p-2 rounded-lg font-semibold text-white text-[0.9rem] cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1 items-center h-[2rem]">
+                <SquarePen className="w-4" />
                 Edit Profile
               </button>
             </PopoverTrigger>
@@ -292,7 +297,7 @@ function Profile() {
                   </Alert>
                 )}
                 <label htmlFor="intro">Profile introduction</label>
-                <Input
+                <Textarea
                   type="intro"
                   placeholder="Profile introduction"
                   required
@@ -304,7 +309,7 @@ function Profile() {
                 <div className="flex justify-start items-center gap-2">
                   <Button
                     type="button"
-                    className="cursor-pointer w-fit h-[1.5rem] p-1 px-2 py-3 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
+                    className="cursor-pointer w-fit  p-1 px-2 py-3 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
                   >
                     <label
                       htmlFor="avatar-img"
@@ -430,9 +435,10 @@ function Profile() {
             <TabsTrigger
               value="stuff"
               className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
-    hover:bg-gray-100 transition"
+    hover:bg-gray-100 transition flex items-center justify-center"
             >
-              Stuff
+              <BriefcaseBusiness />
+              <p>Experience</p>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="about" className="w-full flex flex-col">
@@ -474,27 +480,42 @@ function Profile() {
               className="ml-1 mt-2 cursor-pointer self-start"
               variant={"outline"}
               onClick={() => {
-                const uuid = uuidv4();
-                const newEducationList = {
-                  ...educationList,
-                  [uuid]: educationInput.current.value,
-                };
-                setEducationList({
-                  ...educationList,
-                  [uuid]: educationInput.current.value,
-                });
+                let uuid;
+                let newEducationList;
+                if (educationInput.current.value.trim() !== "") {
+                  uuid = uuidv4();
+                  newEducationList = {
+                    ...educationList,
+                    [uuid]: educationInput.current.value,
+                  };
+                  setEducationList({
+                    ...educationList,
+                    [uuid]: educationInput.current.value.trim(),
+                  });
+                } else {
+                  setEducationList({
+                    ...educationList,
+                  });
+                }
                 fetch(backendURL + "/me/add-education", {
                   method: "POST",
                   credentials: "include",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
                     education: newEducationList,
+                    recentAddedEducation: educationInput.current.value,
                   }),
                 })
                   .then((res) => res.json())
                   .then((res) => {
-                    toast.success("New education added!", { duration: 3000 });
-                    educationInput.current.value="";
+                    if (res.msg === "failure") {
+                      toast.error("Cannot add empty education!", {
+                        duration: 3000,
+                      });
+                    } else {
+                      toast.success("New education added!", { duration: 3000 });
+                      educationInput.current.value = "";
+                    }
                   })
                   .catch((err) => {
                     console.log(err);
