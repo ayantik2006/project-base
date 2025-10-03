@@ -33,6 +33,7 @@ exports.getMeProfileDetails = async (req, res) => {
     projectsNum: userData.projectsNum,
     about: userData.about,
     education: userData.education,
+    skill: userData.skill,
   });
 };
 
@@ -119,4 +120,26 @@ exports.deleteEducation = async (req, res) => {
   await Account.updateOne({ email: email }, { education: education });
 
   return res.json({ education: education });
+};
+
+exports.addSkill = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const recentAddedSkill = req.body.recentAddedSkill;
+  if (recentAddedSkill.trim() === "") {
+    return res.json({ msg: "failure" });
+  }
+  const skill = req.body.skill;
+  await Account.updateOne({ email: email }, { skill: skill });
+  return res.json({});
+};
+
+exports.deleteSkill = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const skillId = req.body.skillId;
+  const userData = await Account.findOne({ email: email });
+  let skill = userData.skill;
+  skill.delete(skillId);
+  await Account.updateOne({ email: email }, { skill: skill });
+
+  return res.json({ skill: skill });
 };

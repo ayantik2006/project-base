@@ -14,6 +14,7 @@ import {
   SquarePen,
   Trash,
   Trash2,
+  X,
 } from "lucide-react";
 import { User } from "lucide-react";
 import { Info } from "lucide-react";
@@ -65,7 +66,9 @@ function Profile() {
   const [aboutValue, setAboutValue] = useState("");
   const [theme, setTheme] = useState("light");
   const [educationList, setEducationList] = useState({});
+  const [skillList, setSkillList] = useState({});
   const educationInput = useRef(null);
+  const skillInput = useRef(null);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -89,6 +92,9 @@ function Profile() {
         Object.keys(res.education).length !== 0
           ? setEducationList(res.education)
           : setEducationList({});
+        Object.keys(res.skill).length !== 0
+          ? setSkillList(res.skill)
+          : setSkillList({});
       })
       .catch((err) => {
         console.log(err);
@@ -563,7 +569,95 @@ function Profile() {
               );
             })}
           </TabsContent>
-          <TabsContent value="stuff">Stuff</TabsContent>
+
+          <TabsContent value="skills" className="w-full flex flex-col">
+            <Textarea
+              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
+              placeholder="Add new skill"
+              ref={skillInput}
+            />
+            <Button
+              className="ml-1 mt-2 cursor-pointer self-start"
+              variant={"outline"}
+              onClick={() => {
+                let uuid;
+                let newSkillList;
+                if (skillInput.current.value.trim() !== "") {
+                  uuid = uuidv4();
+                  newSkillList = {
+                    ...skillList,
+                    [uuid]: skillInput.current.value,
+                  };
+                  setSkillList({
+                    ...skillList,
+                    [uuid]: skillInput.current.value.trim(),
+                  });
+                } else {
+                  setSkillList({
+                    ...skillList,
+                  });
+                }
+                fetch(backendURL + "/me/add-skill", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    skill: newSkillList,
+                    recentAddedSkill: skillInput.current.value,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    if (res.msg === "failure") {
+                      toast.error("Cannot add empty skill!", {
+                        duration: 3000,
+                      });
+                    } else {
+                      toast.success("New skill added!", { duration: 3000 });
+                      skillInput.current.value = "";
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
+              <Plus />
+              Add
+            </Button>
+            <div className="flex flex-wrap shadow-[0_0_10px_#cbd1cc] rounded-lg mt-3 ml-1 p-2 gap-2">
+              {Object.keys(skillList).map((key) => {
+                return (
+                  <div
+                    className="bg-[#7ac655] text-white font-semibold p-1 px-2 rounded-lg flex gap-2 items-center justify-center"
+                    key={key}
+                  >
+                    {skillList[key]}
+                    <X
+                      className="w-4 relative top-[0.08rem] cursor-pointer hover:scale-[1.2] duration-300"
+                      onClick={() => {
+                        fetch(backendURL + "/me/delete-skill", {
+                          method: "POST",
+                          credentials: "include",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            skillId: key,
+                          }),
+                        })
+                          .then((res) => res.json())
+                          .then((res) => {
+                            setSkillList(res.skill);
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                          });
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
