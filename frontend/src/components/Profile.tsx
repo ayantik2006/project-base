@@ -634,7 +634,7 @@ function Profile() {
                   >
                     {skillList[key]}
                     <X
-                      className="w-4 relative top-[0.08rem] cursor-pointer hover:scale-[1.2] duration-300"
+                      className="w-4 relative top-[0.08rem] cursor-pointer hover:scale-[1.2] hover:text-red-500 duration-300"
                       onClick={() => {
                         fetch(backendURL + "/me/delete-skill", {
                           method: "POST",
