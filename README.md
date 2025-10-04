@@ -10,7 +10,7 @@
 2.  Arka Pal
 3.  Shuvam Sathapathi
 
-## ✨ Features
+## ✨ Features to be implemented
 
 - 🎯 **Developer & Interview Support**  
   Live video streaming for interviews, mock sessions, and tutorials. Tailored for developers preparing for career transitions.
