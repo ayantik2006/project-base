@@ -764,7 +764,7 @@ function Profile() {
                 placeholder="Describe your work briefly"
               />
 
-              <div className="flex justify-center items-center gap-7">
+              <div className="flex justify-between items-center gap-7">
                 <div className="flex flex-col gap-1">
                   <label
                     className="font-semibold flex gap-2"
@@ -782,10 +782,11 @@ function Profile() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <label
-                    className="font-semibold"
+                    className="font-semibold flex gap-2"
                     htmlFor="experience-end-date"
                   >
-                    End Date
+                    <CalendarDays className="w-5" />
+                    <p>End Date</p>
                   </label>
                   <Input
                     className="selection:bg-blue-700"
