@@ -37,6 +37,7 @@
 - **Database:** MongoDB Atlas
 - **Image Storage:** Cloudinary
 - **Security:** Bcrypt, JWT
+- **API's:** Google OAuth, Google reCAPTCHA, Perplexity API
 
 ---
 
