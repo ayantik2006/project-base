@@ -23,5 +23,5 @@ router.post("/add-education",checkLoggedIn.checkLoggedIn,meController.addEducati
 router.post("/delete-education",checkLoggedIn.checkLoggedIn,meController.deleteEducation);
 router.post("/add-skill",checkLoggedIn.checkLoggedIn,meController.addSkill);
 router.post("/delete-skill",checkLoggedIn.checkLoggedIn,meController.deleteSkill);
-
+router.post("/add-experience",checkLoggedIn.checkLoggedIn,meController.addExperience)
 module.exports=router;

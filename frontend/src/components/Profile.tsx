@@ -9,7 +9,10 @@ import {
   BadgeInfo,
   BookOpenText,
   BriefcaseBusiness,
+  Building2,
+  CalendarDays,
   Code,
+  List,
   Plus,
   SquarePen,
   Trash,
@@ -25,11 +28,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,6 +40,7 @@ import { Circles } from "react-loader-spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "./ui/textarea";
 import { v4 as uuidv4 } from "uuid";
+import "react-day-picker/style.css";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -57,6 +56,7 @@ function Profile() {
   const [projectsNum, setProjectsNum] = useState(0);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false);
   const [isProfileSaving, setIsProfileSaving] = useState(false);
+  const [isAboutEnhancing, setIsAboutEnhancing] = useState(false);
   const usernameInput = useRef(null);
   const nameInput = useRef(null);
   const introInput = useRef(null);
@@ -424,8 +424,8 @@ function Profile() {
         <Tabs
           defaultValue="about"
           className="mt-5 flex items-center justify-center"
-          onValueChange={(value)=>{
-            if(value==="about"){
+          onValueChange={(value) => {
+            if (value === "about") {
               setAboutCharCount(aboutValue.length);
             }
           }}
@@ -456,7 +456,7 @@ function Profile() {
               Skills
             </TabsTrigger>
             <TabsTrigger
-              value="stuff"
+              value="experience"
               className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
     hover:bg-gray-100 transition flex items-center justify-center"
             >
@@ -502,8 +502,11 @@ function Profile() {
               </Button>
               <Button
                 variant={"outline"}
-                className="mt-[0.5rem] cursor-pointer"
+                className={`${
+                  isAboutEnhancing ? "pointer-events-none bg-gray-300" : ""
+                }  mt-[0.5rem] cursor-pointer`}
                 onClick={() => {
+                  setIsAboutEnhancing(true);
                   fetch(backendURL + "/me/enhance-about", {
                     method: "POST",
                     credentials: "include",
@@ -514,17 +517,34 @@ function Profile() {
                   })
                     .then((res) => res.json())
                     .then((res) => {
-                      toast.error("Will implement later as it requires 5$!!", {
-                        duration: 3000,
-                      });
+                      aboutInput.current.value = res.refinedAbout;
+                      setIsAboutEnhancing(false);
+                      toast.success(
+                        "Click on Save to save the refined version!",
+                        { duration: 4000 }
+                      );
                     })
                     .catch((err) => {
                       console.log(err);
                     });
                 }}
               >
-                <WandSparkles />
-                <p>AI Enhance</p>
+                {isAboutEnhancing ? (
+                  <div className="flex gap-1 items-center">
+                    <Circles
+                      height={20}
+                      width={20}
+                      color="#000"
+                      ariaLabel="loading"
+                    />
+                    <span>Enhancing</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-1 items-center">
+                    <WandSparkles />
+                    <span>AI Enhance</span>
+                  </div>
+                )}
               </Button>
             </div>
           </TabsContent>
@@ -709,6 +729,78 @@ function Profile() {
                 );
               })}
             </div>
+          </TabsContent>
+          <TabsContent value="experience" className=" w-full">
+            <form
+              className="flex flex-col justify-center gap-2 mt-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <label
+                htmlFor="experience-company"
+                className="justify-self-start font-semibold flex gap-2"
+              >
+                <Building2 className="w-5" />
+                <p>Company/Organisaton/Place</p>
+              </label>
+              <Input
+                id="experience-company"
+                className="selection:bg-blue-700"
+                required
+                placeholder="Place of work"
+              />
+              <label
+                htmlFor="experience-description"
+                className="justify-self-start font-semibold flex gap-2"
+              >
+                <List className="w-5" />
+                <p>Description</p>
+              </label>
+              <Input
+                id="experience-description"
+                className="selection:bg-blue-700"
+                required
+                placeholder="Describe your work briefly"
+              />
+
+              <div className="flex justify-center items-center gap-7">
+                <div className="flex flex-col gap-1">
+                  <label
+                    className="font-semibold flex gap-2"
+                    htmlFor="experience-start-date flex"
+                  >
+                    <CalendarDays className="w-5" />
+                    <p>Start Date</p>
+                  </label>
+                  <Input
+                    className="selection:bg-blue-700"
+                    id="experience-start-date"
+                    placeholder="Start date"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label
+                    className="font-semibold"
+                    htmlFor="experience-end-date"
+                  >
+                    End Date
+                  </label>
+                  <Input
+                    className="selection:bg-blue-700"
+                    id="experience-end-date"
+                    placeholder="End end"
+                    required
+                  />
+                </div>
+              </div>
+
+              <Button variant={"outline"} className="w-fit cursor-pointer">
+                <Plus />
+                Add
+              </Button>
+            </form>
           </TabsContent>
         </Tabs>
       </div>

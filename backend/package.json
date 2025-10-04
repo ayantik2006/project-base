@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "@perplexity-ai/perplexity_ai": "^0.8.0",
     "@sendgrid/mail": "^8.1.6",
     "arctic": "^3.7.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
+    "cohere-ai": "^7.19.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",

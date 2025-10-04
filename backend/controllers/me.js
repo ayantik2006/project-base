@@ -9,6 +9,10 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { storage } = require("../cloudConfig.js");
 const upload = multer({ storage });
+const { CohereClientV2 } = require("cohere-ai");
+const client = new CohereClientV2({ token: process.env.COHERE_API_KEY });
+const Perplexity = require("@perplexity-ai/perplexity_ai");
+const PPLXclient = new Perplexity({ apiKey: process.env.PPLX_API_KEY });
 
 exports.nameUsername = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
@@ -101,8 +105,33 @@ exports.saveAbout = async (req, res) => {
 };
 
 exports.enhanceAbout = async (req, res) => {
-  const about = req.body.about;
-  return res.json({});
+  const { about } = req.body;
+  try {
+    const response = await PPLXclient.chat.completions.create({
+      model: "sonar-pro",
+      messages: [
+        {
+          role: "system",
+          content:
+            "Rewrite the provided About text in a professional, clear, and engaging tone. Output plain text only. Keep authentic voice.",
+        },
+        {
+          role: "user",
+          content: `Max 400 characters. Rewrite this:\n\n${about}`,
+        },
+      ],
+      temperature: 0.4,
+      max_tokens: 200
+    });
+    const aiText = response?.choices?.[0]?.message?.content?.trim();
+    const refinedAbout = aiText && aiText.length > 0 ? aiText : about;
+
+    return res.status(200).json({ refinedAbout });
+  } catch (err) {
+    console.error("Error refining About section:", err?.message || err);
+    // Do not throw after writing to res; respond with a 502 to indicate upstream failure.
+    return res.status(502).json({ error: "Failed to refine About section" });
+  }
 };
 
 exports.addEducation = async (req, res) => {
@@ -148,3 +177,5 @@ exports.deleteSkill = async (req, res) => {
 
   return res.json({ skill: skill });
 };
+
+exports.addExperience = async (req, res) => {};
