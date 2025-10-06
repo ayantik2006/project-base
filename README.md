@@ -66,13 +66,13 @@ This project is licensed under the **Apache License 2.0** - see the [LICENSE](LI
 
 ## For feedback or collaboration:  
 ### Ayantik Sarkar
-**Email:** ayantik.sarkar2020@gmail.com  
-**LinkedIn:** https://www.linkedin.com/in/ayantiksarkar
+* **Email:** ayantik.sarkar2020@gmail.com  
+* **LinkedIn:** https://www.linkedin.com/in/ayantiksarkar
 ### Arka Pal
-**Email:** somap982@gmail.com  
-**LinkedIn:** https://www.linkedin.com/in/arka-pal-678578380/
+* **Email:** somap982@gmail.com  
+* **LinkedIn:** https://www.linkedin.com/in/arka-pal-678578380/
 ### Shuvam Sathapathi
-**Email:** shuvamsatapathi@gmail.com  
-**LinkedIn:** https://www.linkedin.com/in/shuvam-satapathi-9800coc/
+* **Email:** shuvamsatapathi@gmail.com  
+* **LinkedIn:** https://www.linkedin.com/in/shuvam-satapathi-9800coc/
 
 </details>
