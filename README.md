@@ -4,7 +4,7 @@
 
 ---
 
-## Our team-
+## 👥 Our team-
 
 1.  Ayantik Sarkar (NIT Rourkela)
 2.  Arka Pal (NIT Rourkela)
