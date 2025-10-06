@@ -6,9 +6,9 @@
 
 ## Current Contributers-
 
-1.  Ayantik Sarkar
-2.  Arka Pal
-3.  Shuvam Sathapathi
+1.  Ayantik Sarkar (NIT Rourkela)
+2.  Arka Pal (NIT Rourkela)
+3.  Shuvam Sathapathi (NIT Rourkela)
 
 ## ✨ Features to be implemented
 
