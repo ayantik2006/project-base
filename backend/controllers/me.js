@@ -25,7 +25,7 @@ exports.nameUsername = async (req, res) => {
 exports.getMeProfileDetails = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
   const userData = await Account.findOne({ email: email });
-  const experience = Object.fromEntries(userData.experience);
+  const experience = Object.fromEntries(userData.experience || []);
   return res.json({
     username: userData.username,
     name: userData.name,
@@ -33,7 +33,7 @@ exports.getMeProfileDetails = async (req, res) => {
     avatarLink: userData.avatarLink,
     joined: userData.accountCreationAt,
     followersNum: userData.followersNum,
-    followingNum: userData.followersNum,
+    followingNum: userData.followingNum,
     postsNum: userData.postsNum,
     projectsNum: userData.projectsNum,
     about: userData.about,
@@ -50,7 +50,7 @@ exports.isUsernameAvailable = async (req, res) => {
     username: username,
     email: { $ne: email },
   });
-  if (userData.length === 0 || username.split() === "")
+  if (userData.length === 0 || username.trim() === "")
     return res.json({ msg: "yes" });
   else return res.json({ msg: "no" });
 };
