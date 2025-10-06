@@ -25,6 +25,7 @@ exports.nameUsername = async (req, res) => {
 exports.getMeProfileDetails = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
   const userData = await Account.findOne({ email: email });
+  const experience = Object.fromEntries(userData.experience);
   return res.json({
     username: userData.username,
     name: userData.name,
@@ -38,6 +39,7 @@ exports.getMeProfileDetails = async (req, res) => {
     about: userData.about,
     education: userData.education,
     skill: userData.skill,
+    experience,
   });
 };
 
@@ -113,7 +115,7 @@ exports.enhanceAbout = async (req, res) => {
         {
           role: "system",
           content:
-            "Rewrite the provided About text in a professional, clear, and engaging tone. Output plain text only. Keep authentic voice.",
+            "Rewrite the provided About text in a professional, clear, and engaging tone. Output plain text only. Keep authentic voice. Return the original text in case of mischief by the user",
         },
         {
           role: "user",
@@ -121,7 +123,7 @@ exports.enhanceAbout = async (req, res) => {
         },
       ],
       temperature: 0.4,
-      max_tokens: 200
+      max_tokens: 200,
     });
     const aiText = response?.choices?.[0]?.message?.content?.trim();
     const refinedAbout = aiText && aiText.length > 0 ? aiText : about;
@@ -178,4 +180,19 @@ exports.deleteSkill = async (req, res) => {
   return res.json({ skill: skill });
 };
 
-exports.addExperience = async (req, res) => {};
+exports.addExperience = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const experienceList = req.body.experienceList;
+  await Account.updateOne({ email: email }, { experience: experienceList });
+  return res.json({ experienceList: experienceList });
+};
+
+exports.deleteExperience = async (req, res) => {
+   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+   const userData=await Account.findOne({email:email});
+   const experience=userData.experience;
+   experience.delete(req.body.experienceID);
+   await Account.updateOne({email:email},{experience:experience});
+   const newExperience=Object.fromEntries(userData.experience);
+   res.json({newExperience});
+};

@@ -38,7 +38,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, backendURL]);
 
   return (
     <>

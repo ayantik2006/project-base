@@ -26,6 +26,13 @@ const schema = new mongoose.Schema({
   about: { type: String, default: "" },
   education: { type: Map, of: String },
   skill: { type: Map, of: String },
+  experience: {
+    type: Map,
+    of: {
+      type: Map,
+      of: String,
+    },
+  },
 });
 
 module.exports = mongoose.model("Account", schema);

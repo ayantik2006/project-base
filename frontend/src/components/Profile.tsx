@@ -68,6 +68,7 @@ function Profile() {
   const [theme, setTheme] = useState("light");
   const [educationList, setEducationList] = useState({});
   const [skillList, setSkillList] = useState({});
+  const [experienceList, setExperienceList] = useState({});
   const educationInput = useRef(null);
   const skillInput = useRef(null);
   const [introCharCount, setIntroCharCount] = useState(0);
@@ -100,6 +101,9 @@ function Profile() {
         Object.keys(res.skill).length !== 0
           ? setSkillList(res.skill)
           : setSkillList({});
+        Object.keys(res.experience).length !== 0
+          ? setExperienceList(res.experience)
+          : setExperienceList({});
       })
       .catch((err) => {
         console.log(err);
@@ -122,11 +126,11 @@ function Profile() {
               ref={avatarImg}
               className="w-23 rounded-full border-4 border-[#7ac655]"
             />
-            <Button
+            {avatarLink!==defaultAvatar && <Button
               variant="outline"
-              className="cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2"
+              className={`cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2 $`}
               type="button"
-              onClick={() => {
+              onClick={(e) => {
                 avatarImg.current.src = defaultAvatar;
                 fetch(backendURL + "/me/delete-profile-picture", {
                   method: "POST",
@@ -138,14 +142,16 @@ function Profile() {
                     toast.success("Profile picture removed!", {
                       duration: 3000,
                     });
+                    e.target.style.display="none"
                   })
                   .catch((err) => {
                     console.log(err);
                   });
               }}
             >
+              <Trash2 className=""/>
               Remove
-            </Button>
+            </Button>}
           </div>
 
           <div className="flex flex-col">
@@ -214,7 +220,7 @@ function Profile() {
           >
             <PopoverTrigger asChild>
               <button className="bg-[#7ac655] p-2 rounded-lg font-semibold text-white text-[0.9rem] cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1 items-center h-[2rem]">
-                <SquarePen className="w-4" />
+                <i className="fa-solid fa-user-pen"></i>
                 Edit Profile
               </button>
             </PopoverTrigger>
@@ -258,7 +264,7 @@ function Profile() {
                     .catch((err) => console.error(err));
                 }}
               >
-                <label htmlFor="name">Name</label>
+                <label htmlFor="name" className="text-[#619c44] font-semibold">Name</label>
                 <Input
                   type="name"
                   placeholder="Name"
@@ -268,7 +274,7 @@ function Profile() {
                   defaultValue={name}
                   ref={nameInput}
                 />
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username" className="text-[#619c44] font-semibold">Username</label>
                 <Input
                   type="username"
                   placeholder="Username"
@@ -308,7 +314,7 @@ function Profile() {
                     </AlertDescription>
                   </Alert>
                 )}
-                <label htmlFor="intro">Profile introduction</label>
+                <label htmlFor="intro" className="text-[#619c44] font-semibold">Profile introduction</label>
                 <Textarea
                   placeholder="Profile introduction"
                   required
@@ -325,9 +331,10 @@ function Profile() {
                   {introCharCount}/150
                 </p>
                 <div className="flex justify-start items-center gap-2">
+                  
                   <Button
                     type="button"
-                    className="cursor-pointer w-fit  p-1 px-2 py-3 text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
+                    className="cursor-pointer w-full text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
                   >
                     <label
                       htmlFor="avatar-img"
@@ -362,7 +369,7 @@ function Profile() {
                 </div>
                 <Button
                   variant="outline"
-                  className={`w-fit items-start ${
+                  className={`w-full items-start ${
                     isUsernameAvailable && username !== "" && !isProfileSaving
                       ? "cursor-pointer hover:bg-[#66a447] hover:text-white items-center"
                       : "pointer-events-none bg-gray-200 items-center"
@@ -413,7 +420,7 @@ function Profile() {
             </p>
           </div>
           <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
-            <p className="text-gray-500 font-semibold">Joined</p>
+            <p className="text-gray-500+ font-semibold">Joined</p>
             <p className="text-[#222322] text-[1.3rem] font-bold">
               {dateJoined}
             </p>
@@ -551,7 +558,7 @@ function Profile() {
           <TabsContent value="education" className="w-full flex flex-col">
             <Textarea
               className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
-              placeholder="Add education"
+              placeholder="Add education detail (with dates)"
               ref={educationInput}
             />
             <Button
@@ -734,12 +741,40 @@ function Profile() {
             <form
               className="flex flex-col justify-center gap-2 mt-2"
               onSubmit={(e) => {
+                const uuid = uuidv4();
+                const newExperienceList = {
+                  ...experienceList,
+                  [uuid]: {
+                    company: e.currentTarget[0].value,
+                    description: e.currentTarget[1].value,
+                    startDate: e.currentTarget[2].value,
+                    endDate: e.currentTarget[3].value,
+                  },
+                };
+                setExperienceList(newExperienceList);
+
                 e.preventDefault();
+                fetch(backendURL + "/me/add-experience", {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    experienceList: newExperienceList,
+                  }),
+                })
+                  .then((res) => res.json())
+                  .then((res) => {
+                    toast.success("New Experience added!", { duration: 3000 });
+                    setExperienceList(res.experienceList);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
               }}
             >
               <label
                 htmlFor="experience-company"
-                className="justify-self-start font-semibold flex gap-2"
+                className="justify-self-start font-semibold flex gap-2 text-[#588c3e]"
               >
                 <Building2 className="w-5" />
                 <p>Company/Organisaton/Place</p>
@@ -752,7 +787,7 @@ function Profile() {
               />
               <label
                 htmlFor="experience-description"
-                className="justify-self-start font-semibold flex gap-2"
+                className="justify-self-start font-semibold flex gap-2 text-[#588c3e]"
               >
                 <List className="w-5" />
                 <p>Description</p>
@@ -767,8 +802,8 @@ function Profile() {
               <div className="flex justify-between items-center gap-7">
                 <div className="flex flex-col gap-1">
                   <label
-                    className="font-semibold flex gap-2"
-                    htmlFor="experience-start-date flex"
+                    className="font-semibold flex gap-2 text-[#588c3e]"
+                    htmlFor="experience-start-date flex "
                   >
                     <CalendarDays className="w-5" />
                     <p>Start Date</p>
@@ -782,7 +817,7 @@ function Profile() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <label
-                    className="font-semibold flex gap-2"
+                    className="font-semibold flex gap-2 text-[#588c3e]"
                     htmlFor="experience-end-date"
                   >
                     <CalendarDays className="w-5" />
@@ -797,11 +832,75 @@ function Profile() {
                 </div>
               </div>
 
-              <Button variant={"outline"} className="w-fit cursor-pointer">
+              <Button variant={"outline"} className="w-fit cursor-pointer mt-2">
                 <Plus />
                 Add
               </Button>
             </form>
+
+            {Object.keys(experienceList).reverse().map((key) => {
+              return (
+                <div
+                  className="shadow-[0_0_10px_#cbd1cc] w-full h-fit p-5 mt-2 rounded-lg hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.02] duration-300 flex flex-col"
+                  key={key}
+                >
+                  <div className="ml-auto flex items-center gap-4 mt-[-0.5rem]">
+                    <i
+                      className="fa-solid fa-pen-to-square text-gray-500 text-[0.9rem] cursor-pointer hover:text-[#7ac655] duration-300"
+                      onClick={() => {}}
+                    ></i>
+                    <i
+                      className="fa-solid fa-trash  text-gray-500 text-[0.8rem] cursor-pointer duration-300 relative top-[0.045rem] hover:text-[#fa0526]"
+                      onClick={(event) => {
+                        const e = event.currentTarget;
+                        const style = e.style;
+                        if (e.classList.contains("fa-trash")) {
+                          e.classList.remove("fa-trash");
+                          e.classList.add("fa-check");
+                          e.style.color = "#fa0526";
+                          setTimeout(() => {
+                            e.classList.remove("fa-check");
+                            e.classList.add("fa-trash");
+                            e.style = style;
+                          }, 3000);
+                        } else {
+                          fetch(backendURL + "/me/delete-experience", {
+                            method: "POST",
+                            credentials: "include",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              experienceID:key
+                            }),
+                          })
+                            .then((res) => res.json())
+                            .then((res) => {
+                              setExperienceList(res.newExperience);
+                            })
+                            .catch((err) => {
+                              console.log(err);
+                            });
+                        }
+                      }}
+                    ></i>
+                  </div>
+                  <div
+                    className="border-l-3 border-l-[#7ac655] pl-2 h-fit"
+                    key={key}
+                  >
+                    <h2 className="font-semibold text-[1.5rem] text-[#7ac655]">
+                      {experienceList[key].company}
+                    </h2>
+                    <p className="text-[0.9rem] text-gray-400">
+                      {experienceList[key].startDate} -{" "}
+                      {experienceList[key].endDate}
+                    </p>
+                    <p className=" text-gray-600">
+                      {experienceList[key].description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </TabsContent>
         </Tabs>
       </div>
