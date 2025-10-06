@@ -4,11 +4,12 @@
 
 ---
 
-## Current Contributers-
+## Our team-
 
 1.  Ayantik Sarkar (NIT Rourkela)
 2.  Arka Pal (NIT Rourkela)
 3.  Shuvam Sathapathi (NIT Rourkela)
+4.  Neelanjan Mukherjee (NIT Durgapur)
 
 ## ✨ Features to be implemented
 
