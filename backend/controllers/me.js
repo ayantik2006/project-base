@@ -188,11 +188,15 @@ exports.addExperience = async (req, res) => {
 };
 
 exports.deleteExperience = async (req, res) => {
-   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-   const userData=await Account.findOne({email:email});
-   const experience=userData.experience;
-   experience.delete(req.body.experienceID);
-   await Account.updateOne({email:email},{experience:experience});
-   const newExperience=Object.fromEntries(userData.experience);
-   res.json({newExperience});
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const userData = await Account.findOne({ email: email });
+  const experience = userData.experience;
+  experience.delete(req.body.experienceID);
+  await Account.updateOne({ email: email }, { experience: experience });
+  const newExperience = Object.fromEntries(userData.experience);
+  res.json({ newExperience });
+};
+
+exports.editExperience = async (req, res) => {
+  
 };

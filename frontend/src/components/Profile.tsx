@@ -12,7 +12,10 @@ import {
   Building2,
   CalendarDays,
   Code,
+  EllipsisVertical,
+  Eraser,
   List,
+  Pencil,
   Plus,
   SquarePen,
   Trash,
@@ -41,6 +44,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "./ui/textarea";
 import { v4 as uuidv4 } from "uuid";
 import "react-day-picker/style.css";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Label } from "@radix-ui/react-label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -73,6 +94,7 @@ function Profile() {
   const skillInput = useRef(null);
   const [introCharCount, setIntroCharCount] = useState(0);
   const [aboutCharCount, setAboutCharCount] = useState(0);
+  const editAboutValue = useRef(null);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -93,8 +115,10 @@ function Profile() {
         setFollowingNum(res.followingNum);
         setPostsNum(res.postsNum);
         setProjectsNum(res.projectsNum);
-        setAboutValue(res.about);
-        setAboutCharCount(aboutValue.length);
+        if (res.about.trim() !== "") setAboutValue(res.about);
+        else setAboutValue("Tell the world about yourself!");
+        if (res.about.trim() === "") setAboutCharCount(0);
+        else setAboutCharCount(aboutValue.length);
         Object.keys(res.education).length !== 0
           ? setEducationList(res.education)
           : setEducationList({});
@@ -108,7 +132,7 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-  }, [aboutValue.length, backendURL, intro.length]);
+  }, [backendURL, intro.length, editAboutValue, aboutValue.length]);
 
   return (
     <div
@@ -117,6 +141,24 @@ function Profile() {
       }`}
     >
       <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center">
+        {/* <div className="self-start mb-[-1rem]">
+          <Popover>
+            <PopoverTrigger>
+              {" "}
+              <button className="hover:bg-gray-200 rounded-full w-7 h-7 cursor-pointer duration-300">
+                <EllipsisVertical className="w-5 m-auto" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit p-0">
+              <div className="flex flex-col gap">
+                <div className="hover:bg-[#f2f5f0]  hover:cursor-pointer rounded p-2 duration-300 font-semibold flex items-center gap-1">
+                  <Trash2 className="w-4" />{" "}
+                  <p className="text-[0.9rem]">Delete profile pic</p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div> */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
           <div className="flex flex-col items-center gap-1">
@@ -126,32 +168,34 @@ function Profile() {
               ref={avatarImg}
               className="w-23 rounded-full border-4 border-[#7ac655]"
             />
-            {avatarLink!==defaultAvatar && <Button
-              variant="outline"
-              className={`cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2 $`}
-              type="button"
-              onClick={(e) => {
-                avatarImg.current.src = defaultAvatar;
-                fetch(backendURL + "/me/delete-profile-picture", {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    toast.success("Profile picture removed!", {
-                      duration: 3000,
-                    });
-                    e.target.style.display="none"
+            {avatarLink !== defaultAvatar && (
+              <Button
+                variant="outline"
+                className={`cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2 $`}
+                type="button"
+                onClick={(e) => {
+                  avatarImg.current.src = defaultAvatar;
+                  fetch(backendURL + "/me/delete-profile-picture", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
                   })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <Trash2 className=""/>
-              Remove
-            </Button>}
+                    .then((res) => res.json())
+                    .then((res) => {
+                      toast.success("Profile picture removed!", {
+                        duration: 3000,
+                      });
+                      e.target.style.display = "none";
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }}
+              >
+                <Trash2 className="" />
+                Remove
+              </Button>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -219,12 +263,12 @@ function Profile() {
             }}
           >
             <PopoverTrigger asChild>
-              <button className="bg-[#7ac655] p-2 rounded-lg font-semibold text-white text-[0.9rem] cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1 items-center h-[2rem]">
+              <button className="bg-[#7ac655] p-2 rounded-[1rem] font-semibold text-white text-[0.9rem] cursor-pointer hover:bg-[#66a447] duration-300 flex gap-1 items-center h-[2rem]">
                 <i className="fa-solid fa-user-pen"></i>
                 Edit Profile
               </button>
             </PopoverTrigger>
-            <PopoverContent className="flex flex-col gap-2">
+            <PopoverContent className="flex flex-col gap-2 border-2">
               <form
                 className="flex flex-col gap-2"
                 encType="multipart/form-data"
@@ -264,7 +308,9 @@ function Profile() {
                     .catch((err) => console.error(err));
                 }}
               >
-                <label htmlFor="name" className="text-[#619c44] font-semibold">Name</label>
+                <label htmlFor="name" className="text-[#619c44] font-semibold">
+                  Name
+                </label>
                 <Input
                   type="name"
                   placeholder="Name"
@@ -274,7 +320,12 @@ function Profile() {
                   defaultValue={name}
                   ref={nameInput}
                 />
-                <label htmlFor="username" className="text-[#619c44] font-semibold">Username</label>
+                <label
+                  htmlFor="username"
+                  className="text-[#619c44] font-semibold"
+                >
+                  Username
+                </label>
                 <Input
                   type="username"
                   placeholder="Username"
@@ -314,7 +365,9 @@ function Profile() {
                     </AlertDescription>
                   </Alert>
                 )}
-                <label htmlFor="intro" className="text-[#619c44] font-semibold">Profile introduction</label>
+                <label htmlFor="intro" className="text-[#619c44] font-semibold">
+                  Profile introduction
+                </label>
                 <Textarea
                   placeholder="Profile introduction"
                   required
@@ -331,10 +384,9 @@ function Profile() {
                   {introCharCount}/150
                 </p>
                 <div className="flex justify-start items-center gap-2">
-                  
                   <Button
                     type="button"
-                    className="cursor-pointer w-full text-[0.9rem] bg-transparent border-1 hover:bg-gray-100"
+                    className="cursor-pointer w-full text-[0.9rem] bg-transparent border-1 hover:bg-gray-100 rounded-[2rem]"
                   >
                     <label
                       htmlFor="avatar-img"
@@ -348,7 +400,7 @@ function Profile() {
                     type="file"
                     name="avatar-img"
                     className="hidden"
-                    accept=".jpg,.png"
+                    accept=".jpg,.png,.jpeg"
                     id="avatar-img"
                     ref={avatarInput}
                     onChange={() => {
@@ -369,9 +421,9 @@ function Profile() {
                 </div>
                 <Button
                   variant="outline"
-                  className={`w-full items-start ${
+                  className={`w-full rounded-[2rem] items-start ${
                     isUsernameAvailable && username !== "" && !isProfileSaving
-                      ? "cursor-pointer hover:bg-[#66a447] hover:text-white items-center"
+                      ? "cursor-pointer bg-[#7ac655] text-white hover:bg-[#66a447] hover:text-white items-center"
                       : "pointer-events-none bg-gray-200 items-center"
                   }`}
                   type="submit"
@@ -396,33 +448,27 @@ function Profile() {
           </Popover>
         </div>
         <hr className="mt-4 mx-10 border-t-1 border-gray-200" />
-        <div className="flex flex-wrap mx-10 justify-center">
-          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
+        <div className="flex flex-wrap mx-10 justify-center gap-1">
+          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-300 cursor-pointer">
             <p className="text-gray-500 font-semibold">Followers</p>
             <p className="text-[#73d244] text-[1.3rem] font-bold">
               {followersNum}
             </p>
           </div>
-          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
+          <div className="h-18 w-26 flex flex-col justify-center items-center hover:scale-[1.1] duration-300 cursor-pointer ">
             <p className="text-gray-500 font-semibold">Following</p>
             <p className="text-[#73d244] text-[1.3rem] font-bold">
               {followingNum}
             </p>
           </div>
-          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
+          <div className="h-18 w-26 flex flex-col justify-center items-center hover:scale-[1.1] duration-300 cursor-pointer rounded-lg">
             <p className="text-gray-500 font-semibold">Posts</p>
             <p className="text-[#73d244] text-[1.3rem] font-bold">{postsNum}</p>
           </div>
-          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
+          <div className="h-18 w-26 flex flex-col justify-center items-center hover:scale-[1.1] duration-300 cursor-pointer">
             <p className="text-gray-500 font-semibold">Projects</p>
             <p className="text-[#73d244] text-[1.3rem] font-bold">
               {projectsNum}
-            </p>
-          </div>
-          <div className="h-18 w-27 flex flex-col justify-center items-center hover:scale-[1.1] duration-500 cursor-pointer">
-            <p className="text-gray-500+ font-semibold">Joined</p>
-            <p className="text-[#222322] text-[1.3rem] font-bold">
-              {dateJoined}
             </p>
           </div>
         </div>
@@ -431,16 +477,11 @@ function Profile() {
         <Tabs
           defaultValue="about"
           className="mt-5 flex items-center justify-center"
-          onValueChange={(value) => {
-            if (value === "about") {
-              setAboutCharCount(aboutValue.length);
-            }
-          }}
         >
           <TabsList className="flex gap-2 flex-wrap h-fit">
             <TabsTrigger
               value="about"
-              className="cursor-pointer py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+              className="cursor-pointer py-2 text-black rounded-[2rem] data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
     hover:bg-gray-100 transition"
             >
               <BadgeInfo />
@@ -448,7 +489,7 @@ function Profile() {
             </TabsTrigger>
             <TabsTrigger
               value="education"
-              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+              className="cursor-pointer px-4 py-2 text-black rounded-[2rem] data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
     hover:bg-gray-100 transition"
             >
               <BookOpenText />
@@ -456,7 +497,7 @@ function Profile() {
             </TabsTrigger>
             <TabsTrigger
               value="skills"
-              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+              className="cursor-pointer px-4 py-2 text-black rounded-[2rem] data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
     hover:bg-gray-100 transition"
             >
               <Code />
@@ -464,7 +505,7 @@ function Profile() {
             </TabsTrigger>
             <TabsTrigger
               value="experience"
-              className="cursor-pointer px-4 py-2 text-black rounded-md data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
+              className="cursor-pointer px-4 py-2 text-black rounded-[2rem] data-[state=active]:text-white data-[state=active]:bg-[#7ac655]
     hover:bg-gray-100 transition flex items-center justify-center"
             >
               <BriefcaseBusiness />
@@ -472,88 +513,174 @@ function Profile() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="about" className="w-full flex flex-col">
-            <Textarea
-              className="ml-1 w-[full] h-[10rem] overflow-auto"
-              placeholder="Write something about you"
-              ref={aboutInput}
-              defaultValue={aboutValue}
-              maxLength={400}
-              onInput={() => {
-                setAboutCharCount(aboutInput.current.value.length);
-              }}
-            />
-            <p className="text-[#979696] text-[0.85rem] font-semibold ml-auto">
-              {aboutCharCount}/400
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                className="ml-1 mt-2 cursor-pointer self-start"
-                variant={"outline"}
-                ref={aboutSaveBtn}
-                onClick={() => {
-                  fetch(backendURL + "/me/save-about", {
-                    method: "POST",
-                    credentials: "include",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      about: aboutInput.current.value,
-                    }),
-                  }).then(() => {
-                    toast.success("About section saved!", { duration: 3000 });
-                    setAboutValue(aboutInput.current.value);
-                  });
-                }}
+            <div className="flex justify-between bg-[#f5f5f5] pr-1 rounded-[0.5rem]">
+              <p
+                className="ml-1 w-[full] h-fit bg-[#f5f5f5] p-3 rounded-[0.5rem] overflow-auto text-gray-500 italic hover:scale-[1.03] duration-300 cursor-default"
+                ref={aboutInput}
               >
-                <Save />
-                Save
-              </Button>
-              <Button
-                variant={"outline"}
-                className={`${
-                  isAboutEnhancing ? "pointer-events-none bg-gray-300" : ""
-                }  mt-[0.5rem] cursor-pointer`}
-                onClick={() => {
-                  setIsAboutEnhancing(true);
-                  fetch(backendURL + "/me/enhance-about", {
-                    method: "POST",
-                    credentials: "include",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      about: aboutInput.current.value,
-                    }),
-                  })
-                    .then((res) => res.json())
-                    .then((res) => {
-                      aboutInput.current.value = res.refinedAbout;
-                      setIsAboutEnhancing(false);
-                      toast.success(
-                        "Click on Save to save the refined version!",
-                        { duration: 4000 }
-                      );
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                    });
-                }}
-              >
-                {isAboutEnhancing ? (
-                  <div className="flex gap-1 items-center">
-                    <Circles
-                      height={20}
-                      width={20}
-                      color="#000"
-                      ariaLabel="loading"
-                    />
-                    <span>Enhancing</span>
+                {aboutValue}
+              </p>
+              <Popover>
+                <PopoverTrigger className="self-start">
+                  <button className="self-start hover:bg-gray-300 cursor-pointer mt-3 rounded-full p-[0.1rem] duration-300 hover:scale-[1.03]">
+                    <EllipsisVertical className="w-5 h-5 text-gray-500" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-fit p-1 mr-3 flex flex-col gap">
+                  <Dialog
+                    onOpenChange={() => {
+                      if (aboutValue !== "Tell the world about yourself!")
+                        setAboutCharCount(aboutValue.length);
+                      else setAboutCharCount(0);
+                    }}
+                  >
+                    <form>
+                      <DialogTrigger asChild>
+                        <div className="p-1 text-[0.9rem] hover:bg-gray-100 rounded  cursor-pointer flex items-center gap-1 duration-300 justify-between">
+                          {/* <SquarePen /> */}
+                          <p>Edit</p>
+                          {/* <i className="fa-solid fa-pen-to-square text-[0.8rem] relative bottom-[0.1rem]"></i> */}
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Edit about section</DialogTitle>
+                          <DialogDescription>
+                            Make changes to your about section here. Click save
+                            when you&apos;re done.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4">
+                          <div className="grid gap-3">
+                            {/* <Label htmlFor="name-1">Name</Label> */}
+                            <Textarea
+                              ref={editAboutValue}
+                              defaultValue={
+                                aboutValue.trim() ==
+                                "Tell the world about yourself!"
+                                  ? ""
+                                  : aboutValue
+                              }
+                              placeholder="Write something about you"
+                              onInput={() => {
+                                setAboutCharCount(
+                                  editAboutValue.current.value.length
+                                );
+                              }}
+                            />
+                            <p className="text-[#979696] text-[0.85rem] font-semibold ml-auto">
+                              {aboutCharCount}/400
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button
+                              variant="outline"
+                              className="cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                          </DialogClose>
+                          <Button
+                            variant={"outline"}
+                            className={`${
+                              isAboutEnhancing
+                                ? "pointer-events-none bg-gray-300"
+                                : ""
+                            } cursor-pointer`}
+                            onClick={() => {
+                              setIsAboutEnhancing(true);
+                              fetch(backendURL + "/me/enhance-about", {
+                                method: "POST",
+                                credentials: "include",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  about: editAboutValue.current.value,
+                                }),
+                              })
+                                .then((res) => res.json())
+                                .then((res) => {
+                                  editAboutValue.current.value =
+                                    res.refinedAbout;
+                                  setIsAboutEnhancing(false);
+                                  toast.success(
+                                    "Click on Save to save the refined version!",
+                                    { duration: 4000 }
+                                  );
+                                })
+                                .catch((err) => {
+                                  console.log(err);
+                                });
+                            }}
+                          >
+                            {isAboutEnhancing ? (
+                              <div className="flex gap-1 items-center">
+                                <Circles
+                                  height={20}
+                                  width={20}
+                                  color="#000"
+                                  ariaLabel="loading"
+                                />
+                                <span>Enhancing</span>
+                              </div>
+                            ) : (
+                              <div className="flex gap-1 items-center">
+                                <WandSparkles />
+                                <span>AI Enhance</span>
+                              </div>
+                            )}
+                          </Button>
+                          <Button
+                            type="submit"
+                            className="bg-[#7ac655] hover:bg-[#6aaa49] cursor-pointer"
+                            onClick={() => {
+                              fetch(backendURL + "/me/save-about", {
+                                method: "POST",
+                                credentials: "include",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  about: editAboutValue.current.value,
+                                }),
+                              }).then(() => {
+                                toast.success("About section saved!", {
+                                  duration: 3000,
+                                });
+                                setAboutValue(editAboutValue.current.value);
+                              });
+                            }}
+                          >
+                            Save changes
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </form>
+                  </Dialog>
+                  <div
+                    className="border-none p-1 text-[0.9rem] hover:bg-gray-100 rounded cursor-pointer flex gap-1 items-center duration-300"
+                    onClick={() => {
+                      fetch(backendURL + "/me/save-about", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          about: "",
+                        }),
+                      }).then(() => {
+                        toast.success("About section empty!", {
+                          duration: 3000,
+                        });
+                        setAboutValue("");
+                      });
+                    }}
+                  >
+                    {/* <Eraser className="w-4" /> */}
+                    <p className="">Clear About</p>
                   </div>
-                ) : (
-                  <div className="flex gap-1 items-center">
-                    <WandSparkles />
-                    <span>AI Enhance</span>
-                  </div>
-                )}
-              </Button>
+                </PopoverContent>
+              </Popover>
             </div>
+            <div className="flex items-center gap-2"></div>
           </TabsContent>
           <TabsContent value="education" className="w-full flex flex-col">
             <Textarea
@@ -650,13 +777,13 @@ function Profile() {
           </TabsContent>
 
           <TabsContent value="skills" className="w-full flex flex-col">
-            <Textarea
-              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
+            <Input
+              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere "
               placeholder="Add new skill"
               ref={skillInput}
             />
             <Button
-              className="ml-1 mt-2 cursor-pointer self-start"
+              className="ml-1 mt-2 cursor-pointer self-start "
               variant={"outline"}
               onClick={() => {
                 let uuid;
@@ -713,7 +840,7 @@ function Profile() {
                   >
                     {skillList[key]}
                     <X
-                      className="w-4 relative top-[0.08rem] cursor-pointer hover:scale-[1.2] hover:text-red-500 duration-300"
+                      className="w-4 relative top-[0.08rem] cursor-pointer"
                       onClick={() => {
                         fetch(backendURL + "/me/delete-skill", {
                           method: "POST",
@@ -738,169 +865,271 @@ function Profile() {
             </div>
           </TabsContent>
           <TabsContent value="experience" className=" w-full">
-            <form
-              className="flex flex-col justify-center gap-2 mt-2"
-              onSubmit={(e) => {
-                const uuid = uuidv4();
-                const newExperienceList = {
-                  ...experienceList,
-                  [uuid]: {
-                    company: e.currentTarget[0].value,
-                    description: e.currentTarget[1].value,
-                    startDate: e.currentTarget[2].value,
-                    endDate: e.currentTarget[3].value,
-                  },
-                };
-                setExperienceList(newExperienceList);
-
-                e.preventDefault();
-                fetch(backendURL + "/me/add-experience", {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    experienceList: newExperienceList,
-                  }),
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    toast.success("New Experience added!", { duration: 3000 });
-                    setExperienceList(res.experienceList);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <label
-                htmlFor="experience-company"
-                className="justify-self-start font-semibold flex gap-2 text-[#588c3e]"
-              >
-                <Building2 className="w-5" />
-                <p>Company/Organisaton/Place</p>
-              </label>
-              <Input
-                id="experience-company"
-                className="selection:bg-blue-700"
-                required
-                placeholder="Place of work"
-              />
-              <label
-                htmlFor="experience-description"
-                className="justify-self-start font-semibold flex gap-2 text-[#588c3e]"
-              >
-                <List className="w-5" />
-                <p>Description</p>
-              </label>
-              <Input
-                id="experience-description"
-                className="selection:bg-blue-700"
-                required
-                placeholder="Describe your work briefly"
-              />
-
-              <div className="flex justify-between items-center gap-7">
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="font-semibold flex gap-2 text-[#588c3e]"
-                    htmlFor="experience-start-date flex "
+            <Dialog>
+              <form>
+                <DialogTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className="w-full cursor-pointer mb-2 flex items-center"
                   >
-                    <CalendarDays className="w-5" />
-                    <p>Start Date</p>
-                  </label>
-                  <Input
-                    className="selection:bg-blue-700"
-                    id="experience-start-date"
-                    placeholder="Start date"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label
-                    className="font-semibold flex gap-2 text-[#588c3e]"
-                    htmlFor="experience-end-date"
+                    <Plus></Plus>
+                    <p>Add new Experience</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add new experience</DialogTitle>
+                    <DialogDescription>
+                      Add all details about your experience. Click save when
+                      you&apos;re done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form
+                    onSubmit={(e) => {
+                      const uuid = uuidv4();
+                      const newExperienceList = {
+                        ...experienceList,
+                        [uuid]: {
+                          company: e.currentTarget[0].value,
+                          description: e.currentTarget[1].value,
+                          startDate:
+                            e.currentTarget[3].value +
+                            " " +
+                            String(e.currentTarget[4].value),
+                          endDate:
+                            e.currentTarget[6].value +
+                            " " +
+                            String(e.currentTarget[7].value),
+                        },
+                      };
+                      setExperienceList(newExperienceList);
+
+                      e.preventDefault();
+                      fetch(backendURL + "/me/add-experience", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          experienceList: newExperienceList,
+                        }),
+                      })
+                        .then((res) => res.json())
+                        .then((res) => {
+                          toast.success("New Experience added!", {
+                            duration: 3000,
+                          });
+                          setExperienceList(res.experienceList);
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                        });
+                    }}
                   >
-                    <CalendarDays className="w-5" />
-                    <p>End Date</p>
-                  </label>
-                  <Input
-                    className="selection:bg-blue-700"
-                    id="experience-end-date"
-                    placeholder="End end"
-                    required
-                  />
-                </div>
-              </div>
+                    <div className="grid gap-4">
+                      <div className="grid gap-3">
+                        <Label>Company/Organisation/Place</Label>
+                        <Input
+                          className="selection:bg-blue-700"
+                          placeholder="Place of work"
+                          required
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label>Job Description</Label>
+                        <Textarea
+                          className="selection:bg-blue-700 selection:text-white"
+                          placeholder="Description of your work"
+                          required
+                        />
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <div className="grid gap-3">
+                          <Label>Start Date</Label>
+                          <Select required>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Month" />
+                            </SelectTrigger>
+                            <SelectContent className="h-[10rem]">
+                              <SelectItem value="January">January</SelectItem>
+                              <SelectItem value="February">February</SelectItem>
+                              <SelectItem value="March">March</SelectItem>
+                              <SelectItem value="April">April</SelectItem>
+                              <SelectItem value="May">May</SelectItem>
+                              <SelectItem value="June">June</SelectItem>
+                              <SelectItem value="July">July</SelectItem>
+                              <SelectItem value="August">August</SelectItem>
+                              <SelectItem value="September">
+                                September
+                              </SelectItem>
+                              <SelectItem value="October">October</SelectItem>
+                              <SelectItem value="November">November</SelectItem>
+                              <SelectItem value="December">December</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Input
+                            type="number"
+                            className="w-[5rem] relative top-[1.1rem]"
+                            placeholder="Year"
+                            required
+                          ></Input>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <div className="grid gap-3">
+                          <Label>End Date</Label>
+                          <Select required>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Month" />
+                            </SelectTrigger>
+                            <SelectContent className="h-[10rem]">
+                              <SelectItem value="January">January</SelectItem>
+                              <SelectItem value="February">February</SelectItem>
+                              <SelectItem value="March">March</SelectItem>
+                              <SelectItem value="April">April</SelectItem>
+                              <SelectItem value="May">May</SelectItem>
+                              <SelectItem value="June">June</SelectItem>
+                              <SelectItem value="July">July</SelectItem>
+                              <SelectItem value="August">August</SelectItem>
+                              <SelectItem value="September">
+                                September
+                              </SelectItem>
+                              <SelectItem value="October">October</SelectItem>
+                              <SelectItem value="November">November</SelectItem>
+                              <SelectItem value="December">December</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Input
+                            type="number"
+                            className="w-[5rem] relative top-[1.1rem]"
+                            placeholder="Year"
+                            required
+                          ></Input>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="checkbox"
+                          id="exp-end-date-present"
+                          className="w-4 accent-[#7ac655]"
+                        ></Input>
+                        <label htmlFor="exp-end-date-present">
+                          I am currently working here
+                        </label>
+                      </div>
+                    </div>
+                    <DialogFooter className="mt-4">
+                      <DialogClose asChild>
+                        <Button variant="outline" className="cursor-pointer">
+                          Cancel
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        type="submit"
+                        className="bg-[#7ac655] hover:bg-[#6fb44d] cursor-pointer"
+                      >
+                        Add
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </form>
+            </Dialog>
 
-              <Button variant={"outline"} className="w-fit cursor-pointer mt-2">
-                <Plus />
-                Add
-              </Button>
-            </form>
-
-            {Object.keys(experienceList).reverse().map((key) => {
-              return (
-                <div
-                  className="shadow-[0_0_10px_#cbd1cc] w-full h-fit p-5 mt-2 rounded-lg hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.02] duration-300 flex flex-col"
-                  key={key}
-                >
-                  <div className="ml-auto flex items-center gap-4 mt-[-0.5rem]">
-                    <i
-                      className="fa-solid fa-pen-to-square text-gray-500 text-[0.9rem] cursor-pointer hover:text-[#7ac655] duration-300"
-                      onClick={() => {}}
-                    ></i>
-                    <i
-                      className="fa-solid fa-trash  text-gray-500 text-[0.8rem] cursor-pointer duration-300 relative top-[0.045rem] hover:text-[#fa0526]"
-                      onClick={(event) => {
-                        const e = event.currentTarget;
-                        const style = e.style;
-                        if (e.classList.contains("fa-trash")) {
-                          e.classList.remove("fa-trash");
-                          e.classList.add("fa-check");
-                          e.style.color = "#fa0526";
-                          setTimeout(() => {
-                            e.classList.remove("fa-check");
-                            e.classList.add("fa-trash");
-                            e.style = style;
-                          }, 3000);
-                        } else {
-                          fetch(backendURL + "/me/delete-experience", {
-                            method: "POST",
-                            credentials: "include",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              experienceID:key
-                            }),
-                          })
-                            .then((res) => res.json())
-                            .then((res) => {
-                              setExperienceList(res.newExperience);
-                            })
-                            .catch((err) => {
-                              console.log(err);
-                            });
-                        }
-                      }}
-                    ></i>
-                  </div>
+            {Object.keys(experienceList)
+              .reverse()
+              .map((key) => {
+                return (
                   <div
-                    className="border-l-3 border-l-[#7ac655] pl-2 h-fit"
+                    className="shadow-[0_0_10px_#cbd1cc]  h-fit w-full p-5 mt-2 rounded-lg hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.02] duration-300 flex flex-col break-all"
                     key={key}
                   >
-                    <h2 className="font-semibold text-[1.5rem] text-[#7ac655]">
-                      {experienceList[key].company}
-                    </h2>
-                    <p className="text-[0.9rem] text-gray-400">
-                      {experienceList[key].startDate} -{" "}
-                      {experienceList[key].endDate}
-                    </p>
-                    <p className=" text-gray-600">
-                      {experienceList[key].description}
-                    </p>
+                    <div className="ml-auto flex items-center gap-4 mt-[-0.5rem]">
+                      <Popover>
+                        <PopoverTrigger className="mb-[-1rem] ml-[4rem]">
+                          <button className="hover:bg-gray-100 rounded-full w-8 h-8 cursor-pointer mt-[-0.5rem] duration-300">
+                            <EllipsisVertical className="w-4 m-auto" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-fit p-0 flex items-center justify-center">
+                          <div className="flex items-center cursor-pointer p-2">
+                            <i
+                              className="fa-solid fa-trash  text-gray-500 text-[0.8rem] cursor-pointer duration-300 relative top-[0.045rem] hover:text-[#fa0526]"
+                              onClick={(event) => {
+                                const e = event.currentTarget;
+                                const style = e.style;
+                                if (e.classList.contains("fa-trash")) {
+                                  e.classList.remove("fa-trash");
+                                  e.classList.add("fa-check");
+                                  e.style.color = "#fa0526";
+                                  setTimeout(() => {
+                                    e.classList.remove("fa-check");
+                                    e.classList.add("fa-trash");
+                                    e.style = style;
+                                  }, 3000);
+                                } else {
+                                  fetch(backendURL + "/me/delete-experience", {
+                                    method: "POST",
+                                    credentials: "include",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                      experienceID: key,
+                                    }),
+                                  })
+                                    .then((res) => res.json())
+                                    .then((res) => {
+                                      setExperienceList(res.newExperience);
+                                    })
+                                    .catch((err) => {
+                                      console.log(err);
+                                    });
+                                }
+                              }}
+                            ></i>
+                          </div>
+                          <div className="p-2 cursor-pointer hover:bg-gray-100">
+                            <i className="fa-solid fa-pen-to-square text-gray-600 text-[0.9rem] relative bottom-[0.03rem]"></i>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div
+                      className="border-l-3 border-l-[#7ac655] pl-2 h-fit"
+                      key={key}
+                    >
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-[1.5rem] text-[#7ac655] peer">
+                          {experienceList[key].company}
+                        </h2>
+                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          {experienceList[key].startDate}
+                        </p>
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          -
+                        </p>
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          {experienceList[key].endDate}
+                        </p>
+                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-gray-600 peer">
+                          {experienceList[key].description}
+                        </p>
+                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </TabsContent>
         </Tabs>
       </div>
