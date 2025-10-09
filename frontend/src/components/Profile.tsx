@@ -95,6 +95,7 @@ function Profile() {
   const [introCharCount, setIntroCharCount] = useState(0);
   const [aboutCharCount, setAboutCharCount] = useState(0);
   const editAboutValue = useRef(null);
+  const [isPresentExp, setIsPresentExp] = useState(false);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -141,24 +142,6 @@ function Profile() {
       }`}
     >
       <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center">
-        {/* <div className="self-start mb-[-1rem]">
-          <Popover>
-            <PopoverTrigger>
-              {" "}
-              <button className="hover:bg-gray-200 rounded-full w-7 h-7 cursor-pointer duration-300">
-                <EllipsisVertical className="w-5 m-auto" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-fit p-0">
-              <div className="flex flex-col gap">
-                <div className="hover:bg-[#f2f5f0]  hover:cursor-pointer rounded p-2 duration-300 font-semibold flex items-center gap-1">
-                  <Trash2 className="w-4" />{" "}
-                  <p className="text-[0.9rem]">Delete profile pic</p>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div> */}
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
           <div className="flex flex-col items-center gap-1">
@@ -208,18 +191,18 @@ function Profile() {
             </a>
             <div className="text-gray-500 text-center sm:text-left inline-flex gap-1 line-clamp-3">
               <Popover>
-                <PopoverTrigger>
+                <PopoverTrigger className="flex items-center gap-1 cursor-pointer">
                   <Info className="w-4 cursor-pointer" />
+                  <p>{intro.slice(0, 14) + "..."}</p>
                 </PopoverTrigger>
                 <PopoverContent
                   side="bottom"
                   align="start"
-                  className="p-2 w-80 mx-8"
+                  className="p-3 w-80 mx-8 text-gray-500"
                 >
                   {intro}
                 </PopoverContent>
               </Popover>
-              {intro.slice(0, 14) + "..."}
             </div>
           </div>
           <Popover
@@ -777,60 +760,100 @@ function Profile() {
           </TabsContent>
 
           <TabsContent value="skills" className="w-full flex flex-col">
-            <Input
-              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere "
+            {/* <Input
+              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere selection:bg-blue-700"
               placeholder="Add new skill"
               ref={skillInput}
-            />
-            <Button
-              className="ml-1 mt-2 cursor-pointer self-start "
-              variant={"outline"}
-              onClick={() => {
-                let uuid;
-                let newSkillList;
-                if (skillInput.current.value.trim() !== "") {
-                  uuid = uuidv4();
-                  newSkillList = {
-                    ...skillList,
-                    [uuid]: skillInput.current.value,
-                  };
-                  setSkillList({
-                    ...skillList,
-                    [uuid]: skillInput.current.value.trim(),
-                  });
-                } else {
-                  setSkillList({
-                    ...skillList,
-                  });
-                }
-                fetch(backendURL + "/me/add-skill", {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    skill: newSkillList,
-                    recentAddedSkill: skillInput.current.value,
-                  }),
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    if (res.msg === "failure") {
-                      toast.error("Cannot add empty skill!", {
-                        duration: 3000,
-                      });
-                    } else {
-                      toast.success("New skill added!", { duration: 3000 });
-                      skillInput.current.value = "";
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }}
-            >
-              <Plus />
-              Add
-            </Button>
+            /> */}
+            <Dialog>
+              <form>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full cursor-pointer">
+                    <Plus />
+                    <p>Add new Skill</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add new Skill</DialogTitle>
+                    <DialogDescription>
+                      Add a new skill here. Click save when you&apos;re done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      let uuid;
+                      let newSkillList;
+                      if (e.currentTarget[0].value.trim() !== "") {
+                        uuid = uuidv4();
+                        newSkillList = {
+                          ...skillList,
+                          [uuid]: e.currentTarget[0].value,
+                        };
+                        setSkillList({
+                          ...skillList,
+                          [uuid]: e.currentTarget[0].value.trim(),
+                        });
+                      } else {
+                        setSkillList({
+                          ...skillList,
+                        });
+                      }
+                      fetch(backendURL + "/me/add-skill", {
+                        method: "POST",
+                        credentials: "include",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          skill: newSkillList,
+                          recentAddedSkill: e.currentTarget[0].value,
+                        }),
+                      })
+                        .then((res) => res.json())
+                        .then((res) => {
+                          if (res.msg === "failure") {
+                            toast.error("Cannot add empty skill!", {
+                              duration: 3000,
+                            });
+                          } else {
+                            toast.success("New skill added!", {
+                              duration: 3000,
+                            });
+                            skillInput.current.value = "";
+                          }
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                        });
+                    }}
+                  >
+                    <div className="grid gap-4">
+                      <div className="grid gap-3">
+                        <Input
+                          placeholder="Skill"
+                          className="selection:bg-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter className="mt-2">
+                      <DialogClose asChild>
+                        <Button variant="outline" className="cursor-pointer">
+                          Cancel
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        type="submit"
+                        className="bg-[#7ac655] hover:bg-[#71b54f] cursor-pointer"
+                      >
+                        Add
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </form>
+            </Dialog>
+
             <div className="flex flex-wrap shadow-[0_0_10px_#cbd1cc] rounded-lg mt-3 ml-1 p-2 gap-2">
               {Object.keys(skillList).map((key) => {
                 return (
@@ -865,7 +888,11 @@ function Profile() {
             </div>
           </TabsContent>
           <TabsContent value="experience" className=" w-full">
-            <Dialog>
+            <Dialog
+              onOpenChange={() => {
+                setIsPresentExp(false);
+              }}
+            >
               <form>
                 <DialogTrigger asChild>
                   <Button
@@ -887,7 +914,7 @@ function Profile() {
                   <form
                     onSubmit={(e) => {
                       const uuid = uuidv4();
-                      const newExperienceList = {
+                      let newExperienceList = {
                         ...experienceList,
                         [uuid]: {
                           company: e.currentTarget[0].value,
@@ -896,10 +923,11 @@ function Profile() {
                             e.currentTarget[3].value +
                             " " +
                             String(e.currentTarget[4].value),
-                          endDate:
-                            e.currentTarget[6].value +
-                            " " +
-                            String(e.currentTarget[7].value),
+                          endDate: isPresentExp
+                            ? "Present"
+                            : e.currentTarget[6].value +
+                              " " +
+                              String(e.currentTarget[7].value),
                         },
                       };
                       setExperienceList(newExperienceList);
@@ -977,46 +1005,62 @@ function Profile() {
                         </div>
                       </div>
                       <div className="flex gap-2 items-center">
-                        <div className="grid gap-3">
-                          <Label>End Date</Label>
-                          <Select required>
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Month" />
-                            </SelectTrigger>
-                            <SelectContent className="h-[10rem]">
-                              <SelectItem value="January">January</SelectItem>
-                              <SelectItem value="February">February</SelectItem>
-                              <SelectItem value="March">March</SelectItem>
-                              <SelectItem value="April">April</SelectItem>
-                              <SelectItem value="May">May</SelectItem>
-                              <SelectItem value="June">June</SelectItem>
-                              <SelectItem value="July">July</SelectItem>
-                              <SelectItem value="August">August</SelectItem>
-                              <SelectItem value="September">
-                                September
-                              </SelectItem>
-                              <SelectItem value="October">October</SelectItem>
-                              <SelectItem value="November">November</SelectItem>
-                              <SelectItem value="December">December</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                        {!isPresentExp && (
+                          <div className="grid gap-3">
+                            <Label>End Date</Label>
+                            <Select required>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Month" />
+                              </SelectTrigger>
+                              <SelectContent className="h-[10rem]">
+                                <SelectItem value="January">January</SelectItem>
+                                <SelectItem value="February">
+                                  February
+                                </SelectItem>
+                                <SelectItem value="March">March</SelectItem>
+                                <SelectItem value="April">April</SelectItem>
+                                <SelectItem value="May">May</SelectItem>
+                                <SelectItem value="June">June</SelectItem>
+                                <SelectItem value="July">July</SelectItem>
+                                <SelectItem value="August">August</SelectItem>
+                                <SelectItem value="September">
+                                  September
+                                </SelectItem>
+                                <SelectItem value="October">October</SelectItem>
+                                <SelectItem value="November">
+                                  November
+                                </SelectItem>
+                                <SelectItem value="December">
+                                  December
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
                         <div>
-                          <Input
-                            type="number"
-                            className="w-[5rem] relative top-[1.1rem]"
-                            placeholder="Year"
-                            required
-                          ></Input>
+                          {!isPresentExp && (
+                            <Input
+                              type="number"
+                              className="w-[5rem] relative top-[1.1rem]"
+                              placeholder="Year"
+                              required
+                            ></Input>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Input
                           type="checkbox"
                           id="exp-end-date-present"
-                          className="w-4 accent-[#7ac655]"
+                          className="w-4 accent-[#7ac655] cursor-pointer"
+                          onChange={(e) => {
+                            setIsPresentExp(e.currentTarget.checked);
+                          }}
                         ></Input>
-                        <label htmlFor="exp-end-date-present">
+                        <label
+                          htmlFor="exp-end-date-present"
+                          className="cursor-pointer"
+                        >
                           I am currently working here
                         </label>
                       </div>
@@ -1106,7 +1150,6 @@ function Profile() {
                         <h2 className="font-semibold text-[1.5rem] text-[#7ac655] peer">
                           {experienceList[key].company}
                         </h2>
-                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
                       </div>
                       <div className="flex items-center gap-2">
                         <p className="text-[0.9rem] text-gray-400 peer italic">
@@ -1118,13 +1161,11 @@ function Profile() {
                         <p className="text-[0.9rem] text-gray-400 peer italic">
                           {experienceList[key].endDate}
                         </p>
-                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
                       </div>
                       <div className="flex items-center gap-2">
                         <p className="text-gray-600 peer">
                           {experienceList[key].description}
                         </p>
-                        <i className="fa-solid fa-pen text-[0.8rem] text-white peer-hover:text-gray-500 hover:text-gray-500 cursor-pointer"></i>
                       </div>
                     </div>
                   </div>
