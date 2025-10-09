@@ -155,7 +155,7 @@ function Profile() {
             {avatarLink !== defaultAvatar && (
               <Button
                 variant="outline"
-                className={`cursor-pointer w-fit h-[1.5rem] text-[0.9rem] hover:bg-red-600 hover:text-white py-3 px-2 $`}
+                className={`cursor-pointer w-fit h-[1.5rem] text-[0.9rem] px-2`}
                 type="button"
                 onClick={(e) => {
                   avatarImg.current.src = defaultAvatar;
@@ -184,7 +184,7 @@ function Profile() {
 
           <div className="flex flex-col">
             <h2 className="font-bold text-[1.2rem] text-center sm:text-left flex items-center justify-center sm:justify-start gap-1">
-              <User className="w-4" />
+              {/* <User className="w-4" /> */}
               {name}
             </h2>
             <a className="cursor-pointer text-gray-500 text-center sm:text-left">
@@ -193,7 +193,7 @@ function Profile() {
             <div className="text-gray-500 text-center sm:text-left inline-flex gap-1 line-clamp-3">
               <Popover>
                 <PopoverTrigger className="flex items-center gap-1 cursor-pointer">
-                  <Info className="w-4 cursor-pointer" />
+                  {/* <Info className="w-4 cursor-pointer" /> */}
                   <p>{intro.slice(0, 14) + "..."}</p>
                 </PopoverTrigger>
                 <PopoverContent
@@ -939,7 +939,7 @@ function Profile() {
                                     const school=e.currentTarget[0].value;
                                     const description=e.currentTarget[1].value;
                                     const startDate=e.currentTarget[3].value+" "+e.currentTarget[4].value;
-                                    const endDate=isPresentExp?"Present":(e.currentTarget[6].value+" "+e.currentTarget[7].value);
+                                    const endDate=isPresentEdu?"Present":(e.currentTarget[6].value+" "+e.currentTarget[7].value);
                                     const editedEducation={
                                       school:school,
                                       description:description,
