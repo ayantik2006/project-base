@@ -176,7 +176,7 @@ function Profile() {
                     });
                 }}
               >
-                <Trash2 className="" />
+                {/* <Trash2 className="" /> */}
                 Remove
               </Button>
             )}
