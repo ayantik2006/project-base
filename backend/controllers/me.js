@@ -26,6 +26,7 @@ exports.getMeProfileDetails = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
   const userData = await Account.findOne({ email: email });
   const experience = Object.fromEntries(userData.experience || []);
+  const education = Object.fromEntries(userData.education || []);
   return res.json({
     username: userData.username,
     name: userData.name,
@@ -37,7 +38,7 @@ exports.getMeProfileDetails = async (req, res) => {
     postsNum: userData.postsNum,
     projectsNum: userData.projectsNum,
     about: userData.about,
-    education: userData.education,
+    education,
     skill: userData.skill,
     experience,
   });
@@ -138,24 +139,30 @@ exports.enhanceAbout = async (req, res) => {
 
 exports.addEducation = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-  const recentAddedEducation = req.body.recentAddedEducation;
-  if (recentAddedEducation.trim() === "") {
-    return res.json({ msg: "failure" });
-  }
-  const education = req.body.education;
-  await Account.updateOne({ email: email }, { education: education });
-  return res.json({});
+  const educationList = req.body.educationList;
+  await Account.updateOne({ email: email }, { education: educationList });
+  return res.json({ educationList: educationList });
 };
 
 exports.deleteEducation = async (req, res) => {
   const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
-  const educationId = req.body.educationId;
   const userData = await Account.findOne({ email: email });
-  let education = userData.education;
-  education.delete(educationId);
+  const education = userData.education;
+  education.delete(req.body.educationID);
   await Account.updateOne({ email: email }, { education: education });
-
+  const newEducation = Object.fromEntries(userData.education);
+  res.json({ newEducation });
   return res.json({ education: education });
+};
+
+exports.editEducation = async (req, res) => {
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const { editedEducationList, uuid } = req.body;
+  await Account.updateOne(
+    { email: email },
+    { education: editedEducationList }
+  );
+  return res.json({});
 };
 
 exports.addSkill = async (req, res) => {
@@ -198,5 +205,11 @@ exports.deleteExperience = async (req, res) => {
 };
 
 exports.editExperience = async (req, res) => {
-  
+  const email = await jwt.verify(req.cookies.user, process.env.SECRET_KEY).id;
+  const { editedExperienceList, uuid } = req.body;
+  await Account.updateOne(
+    { email: email },
+    { experience: editedExperienceList }
+  );
+  return res.json({});
 };

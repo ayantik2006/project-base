@@ -24,7 +24,13 @@ const schema = new mongoose.Schema({
   postsNum: { type: Number, default: 0 },
   projectsNum: { type: Number, default: 0 },
   about: { type: String, default: "" },
-  education: { type: Map, of: String },
+  education: {
+    type: Map,
+    of: {
+      type: Map,
+      of: String,
+    },
+  },
   skill: { type: Map, of: String },
   experience: {
     type: Map,

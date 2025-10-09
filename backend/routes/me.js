@@ -21,6 +21,7 @@ router.post("/save-about",checkLoggedIn.checkLoggedIn,meController.saveAbout);
 router.post("/enhance-about",checkLoggedIn.checkLoggedIn,meController.enhanceAbout);
 router.post("/add-education",checkLoggedIn.checkLoggedIn,meController.addEducation);
 router.post("/delete-education",checkLoggedIn.checkLoggedIn,meController.deleteEducation);
+router.post("/edit-education",checkLoggedIn.checkLoggedIn,meController.editEducation)
 router.post("/add-skill",checkLoggedIn.checkLoggedIn,meController.addSkill);
 router.post("/delete-skill",checkLoggedIn.checkLoggedIn,meController.deleteSkill);
 router.post("/add-experience",checkLoggedIn.checkLoggedIn,meController.addExperience)

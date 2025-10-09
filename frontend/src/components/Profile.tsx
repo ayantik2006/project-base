@@ -96,6 +96,7 @@ function Profile() {
   const [aboutCharCount, setAboutCharCount] = useState(0);
   const editAboutValue = useRef(null);
   const [isPresentExp, setIsPresentExp] = useState(false);
+  const [isPresentEdu, setIsPresentEdu] = useState(false);
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -666,97 +667,525 @@ function Profile() {
             <div className="flex items-center gap-2"></div>
           </TabsContent>
           <TabsContent value="education" className="w-full flex flex-col">
-            <Textarea
-              className="ml-1 w-[full] min-h-0 h-[2.6rem] overflow-auto wrap-anywhere"
-              placeholder="Add education detail (with dates)"
-              ref={educationInput}
-            />
-            <Button
-              className="ml-1 mt-2 cursor-pointer self-start"
-              variant={"outline"}
-              onClick={() => {
-                let uuid;
-                let newEducationList;
-                if (educationInput.current.value.trim() !== "") {
-                  uuid = uuidv4();
-                  newEducationList = {
-                    ...educationList,
-                    [uuid]: educationInput.current.value,
-                  };
-                  setEducationList({
-                    ...educationList,
-                    [uuid]: educationInput.current.value.trim(),
-                  });
-                } else {
-                  setEducationList({
-                    ...educationList,
-                  });
-                }
-                fetch(backendURL + "/me/add-education", {
-                  method: "POST",
-                  credentials: "include",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    education: newEducationList,
-                    recentAddedEducation: educationInput.current.value,
-                  }),
-                })
-                  .then((res) => res.json())
-                  .then((res) => {
-                    if (res.msg === "failure") {
-                      toast.error("Cannot add empty education!", {
-                        duration: 3000,
-                      });
-                    } else {
-                      toast.success("New education added!", { duration: 3000 });
-                      educationInput.current.value = "";
-                    }
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
+            <Dialog
+              onOpenChange={() => {
+                setIsPresentEdu(false);
               }}
             >
-              <Plus />
-              Add
-            </Button>
-            {[...Object.keys(educationList)].reverse().map((key) => {
-              return (
-                <div
-                  className="m-1 p-[0.4rem] rounded-lg flex items-center justify-between shadow-[0_0_10px_#cbd1cc] mt-4 gap-2 hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.01] duration-300 cursor-auto"
-                  key={key}
-                >
-                  <Textarea
-                    className="p-2 min-h-0 h-[2.3rem] overflow-x-hidden w-full wrap-anywhere cursor-auto"
-                    key={key}
-                    value={educationList[key]}
-                    readOnly
-                  ></Textarea>
-                  <button
-                    className="cursor-pointer   duration-300 font-bold mr-1 p-1"
-                    onClick={() => {
-                      fetch(backendURL + "/me/delete-education", {
+              <form>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full cursor-pointer">
+                    <Plus />
+                    <p>Add new Education</p>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add new Education</DialogTitle>
+                    <DialogDescription>
+                      Add a new education here. Click add when you&apos;re done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const uuid = uuidv4();
+                      console.log(e.currentTarget[7].value);
+
+                      let newEducationList = {
+                        ...educationList,
+                        [uuid]: {
+                          school: e.currentTarget[0].value,
+                          description: e.currentTarget[1].value,
+                          startDate:
+                            e.currentTarget[3].value +
+                            " " +
+                            String(e.currentTarget[4].value),
+                          endDate: isPresentEdu
+                            ? "Present"
+                            : e.currentTarget[6].value +
+                              " " +
+                              String(e.currentTarget[7].value),
+                        },
+                      };
+                      setEducationList(newEducationList);
+
+                      fetch(backendURL + "/me/add-education", {
                         method: "POST",
                         credentials: "include",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                          educationId: key,
+                          educationList: newEducationList,
                         }),
                       })
                         .then((res) => res.json())
                         .then((res) => {
-                          setEducationList(res.education);
+                          toast.success("New Education added!", {
+                            duration: 3000,
+                          });
+                          setEducationList(res.educationList);
                         })
                         .catch((err) => {
                           console.log(err);
                         });
                     }}
                   >
-                    <Trash2 className="w-[1rem] font-bold hover:text-red-700 duration-300 hover:scale-[1.2]" />
-                  </button>
-                </div>
-              );
-            })}
+                    <div className="grid gap-4">
+                      <div className="grid gap-3">
+                        <Label htmlFor="name-1">School</Label>
+                        <Input
+                          className="selection:bg-blue-700"
+                          placeholder="School"
+                          required
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label htmlFor="username-1">Description</Label>
+                        <Textarea placeholder="Degree/Learning" required />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="grid gap-3">
+                          <Label>Start Date</Label>
+                          <Select required>
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Month" />
+                            </SelectTrigger>
+                            <SelectContent className="h-[10rem]">
+                              <SelectItem value="January">January</SelectItem>
+                              <SelectItem value="February">February</SelectItem>
+                              <SelectItem value="March">March</SelectItem>
+                              <SelectItem value="April">April</SelectItem>
+                              <SelectItem value="May">May</SelectItem>
+                              <SelectItem value="June">June</SelectItem>
+                              <SelectItem value="July">July</SelectItem>
+                              <SelectItem value="August">August</SelectItem>
+                              <SelectItem value="September">
+                                September
+                              </SelectItem>
+                              <SelectItem value="October">October</SelectItem>
+                              <SelectItem value="November">November</SelectItem>
+                              <SelectItem value="December">December</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Input
+                          type="number"
+                          className="relative top-[1.15rem] w-[5rem] selection:bg-blue-700"
+                          placeholder="Year"
+                          required
+                        ></Input>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {!isPresentEdu && (
+                          <div className="grid gap-3">
+                            <Label>End Date</Label>
+                            <Select required>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Month" />
+                              </SelectTrigger>
+                              <SelectContent className="h-[10rem]">
+                                <SelectItem value="January">January</SelectItem>
+                                <SelectItem value="February">
+                                  February
+                                </SelectItem>
+                                <SelectItem value="March">March</SelectItem>
+                                <SelectItem value="April">April</SelectItem>
+                                <SelectItem value="May">May</SelectItem>
+                                <SelectItem value="June">June</SelectItem>
+                                <SelectItem value="July">July</SelectItem>
+                                <SelectItem value="August">August</SelectItem>
+                                <SelectItem value="September">
+                                  September
+                                </SelectItem>
+                                <SelectItem value="October">October</SelectItem>
+                                <SelectItem value="November">
+                                  November
+                                </SelectItem>
+                                <SelectItem value="December">
+                                  December
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        {!isPresentEdu && (
+                          <Input
+                            type="number"
+                            className="relative top-[1.15rem] w-[5rem] selection:bg-blue-700"
+                            placeholder="Year"
+                            required
+                          ></Input>
+                        )}
+                      </div>
+                      <div className="grid gap-3">
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="checkbox"
+                            id="education-present-end-date"
+                            className="w-4 accent-[#7ac655] cursor-pointer"
+                            onChange={(e) => {
+                              setIsPresentEdu(e.currentTarget.checked);
+                            }}
+                          ></Input>
+                          <label
+                            htmlFor="education-present-end-date"
+                            className="cursor-pointer"
+                          >
+                            I am currently studying here
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline" className="cursor-pointer">
+                          Cancel
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        type="submit"
+                        className="bg-[#7ac655] hover:bg-[#69a849] cursor-pointer"
+                      >
+                        Add
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </form>
+            </Dialog>
+            {Object.keys(educationList)
+              .reverse()
+              .map((key) => {
+                return (
+                  <div
+                    className="shadow-[0_0_10px_#cbd1cc]  h-fit w-full p-5 mt-2 rounded-lg hover:shadow-[0_0_20px_#cbd1cc] hover:scale-[1.02] duration-300 flex flex-col break-all"
+                    key={key}
+                  >
+                    <div className="ml-auto flex items-center gap-4 mt-[-0.5rem]">
+                      <Popover>
+                        <PopoverTrigger className="mb-[-1rem] ml-[4rem]">
+                          <button className="hover:bg-gray-100 rounded-full w-8 h-8 cursor-pointer mt-[-0.5rem] duration-300">
+                            <EllipsisVertical className="w-4 m-auto" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-fit p-0 flex items-center justify-center">
+                          <div className="flex items-center cursor-pointer p-2">
+                            <i
+                              className="fa-solid fa-trash  text-gray-500 text-[0.8rem] cursor-pointer duration-300 relative top-[0.045rem] hover:text-[#fa0526]"
+                              onClick={(event) => {
+                                const e = event.currentTarget;
+                                const style = e.style;
+                                if (e.classList.contains("fa-trash")) {
+                                  e.classList.remove("fa-trash");
+                                  e.classList.add("fa-check");
+                                  e.style.color = "#fa0526";
+                                  setTimeout(() => {
+                                    e.classList.remove("fa-check");
+                                    e.classList.add("fa-trash");
+                                    e.style = style;
+                                  }, 3000);
+                                } else {
+                                  fetch(backendURL + "/me/delete-education", {
+                                    method: "POST",
+                                    credentials: "include",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                      educationID: key,
+                                    }),
+                                  })
+                                    .then((res) => res.json())
+                                    .then((res) => {
+                                      setEducationList(res.newEducation);
+                                    })
+                                    .catch((err) => {
+                                      console.log(err);
+                                    });
+                                }
+                              }}
+                            ></i>
+                          </div>
+                          <Dialog
+                            onOpenChange={(e) => {
+                              if (e) {
+                                if (educationList[key].endDate === "Present") {
+                                  setIsPresentEdu(true);
+                                }
+                              }
+                              else{
+                                setIsPresentEdu(false);
+                              }
+                            }}
+                          >
+                            <form>
+                              <DialogTrigger asChild>
+                                <div className="p-2 cursor-pointer hover:bg-gray-100">
+                                  <i className="fa-solid fa-pen-to-square text-gray-600 text-[0.9rem] relative bottom-[0.03rem]"></i>
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>Edit this education</DialogTitle>
+                                  <DialogDescription>
+                                    Click add when you&apos;re done.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const uuid = key;
+                                    const school=e.currentTarget[0].value;
+                                    const description=e.currentTarget[1].value;
+                                    const startDate=e.currentTarget[3].value+" "+e.currentTarget[4].value;
+                                    const endDate=isPresentExp?"Present":(e.currentTarget[6].value+" "+e.currentTarget[7].value);
+                                    const editedEducation={
+                                      school:school,
+                                      description:description,
+                                      startDate:startDate,
+                                      endDate:endDate
+                                    }
+                                    educationList[uuid]=editedEducation;
+                                    fetch(backendURL+"/me/edit-education",{
+                                      method:"POST",
+                                      credentials:"include",
+                                      headers:{"Content-Type":"application/json"},
+                                      body:JSON.stringify({editedEducationList:educationList,uuid:key})
+                                    })
+                                    .then((res)=>res.json())
+                                    .then((res)=>{
+                                      toast.success("Education updated and saved!",{duration:3000});
+                                    })
+                                  }}
+                                >
+                                  <div className="grid gap-4">
+                                    <div className="grid gap-3">
+                                      <Label>School</Label>
+                                      <Input
+                                        className="selection:bg-blue-700"
+                                        placeholder="School"
+                                        required
+                                        defaultValue={
+                                          educationList[key].school
+                                        }
+                                      />
+                                    </div>
+                                    <div className="grid gap-3">
+                                      <Label>Description</Label>
+                                      <Textarea
+                                        className="selection:bg-blue-700 selection:text-white"
+                                        placeholder="Degree/learnings"
+                                        required
+                                        defaultValue={
+                                          educationList[key].description
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <div className="grid gap-3">
+                                        <Label>Start Date</Label>
+                                        <Select
+                                          required
+                                          defaultValue={
+                                            educationList[key].startDate.split(
+                                              " "
+                                            )[0]
+                                          }
+                                        >
+                                          <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Month" />
+                                          </SelectTrigger>
+                                          <SelectContent className="h-[10rem]">
+                                            <SelectItem value="January">
+                                              January
+                                            </SelectItem>
+                                            <SelectItem value="February">
+                                              February
+                                            </SelectItem>
+                                            <SelectItem value="March">
+                                              March
+                                            </SelectItem>
+                                            <SelectItem value="April">
+                                              April
+                                            </SelectItem>
+                                            <SelectItem value="May">
+                                              May
+                                            </SelectItem>
+                                            <SelectItem value="June">
+                                              June
+                                            </SelectItem>
+                                            <SelectItem value="July">
+                                              July
+                                            </SelectItem>
+                                            <SelectItem value="August">
+                                              August
+                                            </SelectItem>
+                                            <SelectItem value="September">
+                                              September
+                                            </SelectItem>
+                                            <SelectItem value="October">
+                                              October
+                                            </SelectItem>
+                                            <SelectItem value="November">
+                                              November
+                                            </SelectItem>
+                                            <SelectItem value="December">
+                                              December
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Input
+                                          type="number"
+                                          className="w-[5rem] relative top-[1.1rem]"
+                                          placeholder="Year"
+                                          required
+                                          defaultValue={
+                                            educationList[key].startDate.split(
+                                              " "
+                                            )[1]
+                                          }
+                                        ></Input>
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      {!isPresentEdu && (
+                                        <div className="grid gap-3">
+                                          <Label>End Date</Label>
+                                          <Select required defaultValue={educationList[key].endDate.split(" ")[0]}>
+                                            <SelectTrigger className="w-[180px]">
+                                              <SelectValue placeholder="Month" />
+                                            </SelectTrigger>
+                                            <SelectContent className="h-[10rem]">
+                                              <SelectItem value="January">
+                                                January
+                                              </SelectItem>
+                                              <SelectItem value="February">
+                                                February
+                                              </SelectItem>
+                                              <SelectItem value="March">
+                                                March
+                                              </SelectItem>
+                                              <SelectItem value="April">
+                                                April
+                                              </SelectItem>
+                                              <SelectItem value="May">
+                                                May
+                                              </SelectItem>
+                                              <SelectItem value="June">
+                                                June
+                                              </SelectItem>
+                                              <SelectItem value="July">
+                                                July
+                                              </SelectItem>
+                                              <SelectItem value="August">
+                                                August
+                                              </SelectItem>
+                                              <SelectItem value="September">
+                                                September
+                                              </SelectItem>
+                                              <SelectItem value="October">
+                                                October
+                                              </SelectItem>
+                                              <SelectItem value="November">
+                                                November
+                                              </SelectItem>
+                                              <SelectItem value="December">
+                                                December
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                      )}
+                                      <div>
+                                        {!isPresentEdu && (
+                                          <Input
+                                            type="number"
+                                            className="w-[5rem] relative top-[1.1rem]"
+                                            placeholder="Year"
+                                            required
+                                            defaultValue={educationList[key].endDate.split(" ")[1]}
+                                          ></Input>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="checkbox"
+                                        id="edu-end-date-present"
+                                        className="w-4 accent-[#7ac655] cursor-pointer"
+                                        defaultChecked={
+                                          educationList[key].endDate ===
+                                          "Present"
+                                        }
+                                        onChange={(e) => {
+                                          setIsPresentEdu(
+                                            e.currentTarget.checked
+                                          );
+                                        }}
+                                      ></Input>
+                                      <label
+                                        htmlFor="edu-end-date-present"
+                                        className="cursor-pointer"
+                                      >
+                                        I am currently studying here
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <DialogFooter className="mt-4">
+                                    <DialogClose asChild>
+                                      <Button
+                                        variant="outline"
+                                        className="cursor-pointer"
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </DialogClose>
+                                    <Button
+                                      type="submit"
+                                      className="bg-[#7ac655] hover:bg-[#6fb44d] cursor-pointer"
+                                    >
+                                      Save Changes
+                                    </Button>
+                                  </DialogFooter>
+                                </form>
+                              </DialogContent>
+                            </form>
+                          </Dialog>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div
+                      className="border-l-3 border-l-[#7ac655] pl-2 h-fit"
+                      key={key}
+                    >
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-semibold text-[1.5rem] text-[#7ac655] peer">
+                          {educationList[key].school}
+                        </h2>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          {educationList[key].startDate}
+                        </p>
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          -
+                        </p>
+                        <p className="text-[0.9rem] text-gray-400 peer italic">
+                          {educationList[key].endDate}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-gray-600 peer">
+                          {educationList[key].description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
           </TabsContent>
 
           <TabsContent value="skills" className="w-full flex flex-col">
@@ -777,7 +1206,7 @@ function Profile() {
                   <DialogHeader>
                     <DialogTitle>Add new Skill</DialogTitle>
                     <DialogDescription>
-                      Add a new skill here. Click save when you&apos;re done.
+                      Add a new skill here. Click add when you&apos;re done.
                     </DialogDescription>
                   </DialogHeader>
                   <form
@@ -887,6 +1316,7 @@ function Profile() {
               })}
             </div>
           </TabsContent>
+
           <TabsContent value="experience" className=" w-full">
             <Dialog
               onOpenChange={() => {
@@ -907,7 +1337,7 @@ function Profile() {
                   <DialogHeader>
                     <DialogTitle>Add new experience</DialogTitle>
                     <DialogDescription>
-                      Add all details about your experience. Click save when
+                      Add all details about your experience. Click add when
                       you&apos;re done.
                     </DialogDescription>
                   </DialogHeader>
@@ -1136,9 +1566,253 @@ function Profile() {
                               }}
                             ></i>
                           </div>
-                          <div className="p-2 cursor-pointer hover:bg-gray-100">
-                            <i className="fa-solid fa-pen-to-square text-gray-600 text-[0.9rem] relative bottom-[0.03rem]"></i>
-                          </div>
+                          <Dialog
+                            onOpenChange={(e) => {
+                              if (e) {
+                                if (experienceList[key].endDate === "Present") {
+                                  setIsPresentExp(true);
+                                }
+                              }
+                              else{
+                                setIsPresentExp(false);
+                              }
+                            }}
+                          >
+                            <form>
+                              <DialogTrigger asChild>
+                                <div className="p-2 cursor-pointer hover:bg-gray-100">
+                                  <i className="fa-solid fa-pen-to-square text-gray-600 text-[0.9rem] relative bottom-[0.03rem]"></i>
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>Edit this experience</DialogTitle>
+                                  <DialogDescription>
+                                    Click add when you&apos;re done.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const uuid = key;
+                                    const company=e.currentTarget[0].value;
+                                    const description=e.currentTarget[1].value;
+                                    const startDate=e.currentTarget[3].value+" "+e.currentTarget[4].value;
+                                    const endDate=isPresentExp?"Present":(e.currentTarget[6].value+" "+e.currentTarget[7].value);
+                                    const editedExperience={
+                                      company:company,
+                                      description:description,
+                                      startDate:startDate,
+                                      endDate:endDate
+                                    }
+                                    experienceList[uuid]=editedExperience;
+                                    fetch(backendURL+"/me/edit-experience",{
+                                      method:"POST",
+                                      credentials:"include",
+                                      headers:{"Content-Type":"application/json"},
+                                      body:JSON.stringify({editedExperienceList:experienceList,uuid:key})
+                                    })
+                                    .then((res)=>res.json())
+                                    .then((res)=>{
+                                      toast.success("Education updated and saved!",{duration:3000});
+                                    })
+                                  }}
+                                >
+                                  <div className="grid gap-4">
+                                    <div className="grid gap-3">
+                                      <Label>Company/Organisation/Place</Label>
+                                      <Input
+                                        className="selection:bg-blue-700"
+                                        placeholder="Place of work"
+                                        required
+                                        defaultValue={
+                                          experienceList[key].company
+                                        }
+                                      />
+                                    </div>
+                                    <div className="grid gap-3">
+                                      <Label>Job Description</Label>
+                                      <Textarea
+                                        className="selection:bg-blue-700 selection:text-white"
+                                        placeholder="Description of your work"
+                                        required
+                                        defaultValue={
+                                          experienceList[key].description
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <div className="grid gap-3">
+                                        <Label>Start Date</Label>
+                                        <Select
+                                          required
+                                          defaultValue={
+                                            experienceList[key].startDate.split(
+                                              " "
+                                            )[0]
+                                          }
+                                        >
+                                          <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Month" />
+                                          </SelectTrigger>
+                                          <SelectContent className="h-[10rem]">
+                                            <SelectItem value="January">
+                                              January
+                                            </SelectItem>
+                                            <SelectItem value="February">
+                                              February
+                                            </SelectItem>
+                                            <SelectItem value="March">
+                                              March
+                                            </SelectItem>
+                                            <SelectItem value="April">
+                                              April
+                                            </SelectItem>
+                                            <SelectItem value="May">
+                                              May
+                                            </SelectItem>
+                                            <SelectItem value="June">
+                                              June
+                                            </SelectItem>
+                                            <SelectItem value="July">
+                                              July
+                                            </SelectItem>
+                                            <SelectItem value="August">
+                                              August
+                                            </SelectItem>
+                                            <SelectItem value="September">
+                                              September
+                                            </SelectItem>
+                                            <SelectItem value="October">
+                                              October
+                                            </SelectItem>
+                                            <SelectItem value="November">
+                                              November
+                                            </SelectItem>
+                                            <SelectItem value="December">
+                                              December
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Input
+                                          type="number"
+                                          className="w-[5rem] relative top-[1.1rem]"
+                                          placeholder="Year"
+                                          required
+                                          defaultValue={
+                                            experienceList[key].startDate.split(
+                                              " "
+                                            )[1]
+                                          }
+                                        ></Input>
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      {!isPresentExp && (
+                                        <div className="grid gap-3">
+                                          <Label>End Date</Label>
+                                          <Select required defaultValue={experienceList[key].endDate.split(" ")[0]}>
+                                            <SelectTrigger className="w-[180px]">
+                                              <SelectValue placeholder="Month" />
+                                            </SelectTrigger>
+                                            <SelectContent className="h-[10rem]">
+                                              <SelectItem value="January">
+                                                January
+                                              </SelectItem>
+                                              <SelectItem value="February">
+                                                February
+                                              </SelectItem>
+                                              <SelectItem value="March">
+                                                March
+                                              </SelectItem>
+                                              <SelectItem value="April">
+                                                April
+                                              </SelectItem>
+                                              <SelectItem value="May">
+                                                May
+                                              </SelectItem>
+                                              <SelectItem value="June">
+                                                June
+                                              </SelectItem>
+                                              <SelectItem value="July">
+                                                July
+                                              </SelectItem>
+                                              <SelectItem value="August">
+                                                August
+                                              </SelectItem>
+                                              <SelectItem value="September">
+                                                September
+                                              </SelectItem>
+                                              <SelectItem value="October">
+                                                October
+                                              </SelectItem>
+                                              <SelectItem value="November">
+                                                November
+                                              </SelectItem>
+                                              <SelectItem value="December">
+                                                December
+                                              </SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                      )}
+                                      <div>
+                                        {!isPresentExp && (
+                                          <Input
+                                            type="number"
+                                            className="w-[5rem] relative top-[1.1rem]"
+                                            placeholder="Year"
+                                            required
+                                            defaultValue={experienceList[key].endDate.split(" ")[1]}
+                                          ></Input>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Input
+                                        type="checkbox"
+                                        id="exp-end-date-present"
+                                        className="w-4 accent-[#7ac655] cursor-pointer"
+                                        defaultChecked={
+                                          experienceList[key].endDate ===
+                                          "Present"
+                                        }
+                                        onChange={(e) => {
+                                          setIsPresentExp(
+                                            e.currentTarget.checked
+                                          );
+                                        }}
+                                      ></Input>
+                                      <label
+                                        htmlFor="exp-end-date-present"
+                                        className="cursor-pointer"
+                                      >
+                                        I am currently working here
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <DialogFooter className="mt-4">
+                                    <DialogClose asChild>
+                                      <Button
+                                        variant="outline"
+                                        className="cursor-pointer"
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </DialogClose>
+                                    <Button
+                                      type="submit"
+                                      className="bg-[#7ac655] hover:bg-[#6fb44d] cursor-pointer"
+                                    >
+                                      Save Changes
+                                    </Button>
+                                  </DialogFooter>
+                                </form>
+                              </DialogContent>
+                            </form>
+                          </Dialog>
                         </PopoverContent>
                       </Popover>
                     </div>
