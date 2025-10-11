@@ -48,6 +48,7 @@ function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/feed" element={<Feed />} />
         <Route path="/me/profile" element={<Profile />} />
+        <Route path="/me/completeprofile" element={<Profile />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
       <Toaster />

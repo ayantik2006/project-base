@@ -62,6 +62,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import Navbar from "./Navbar";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -142,7 +143,8 @@ function Profile() {
         theme === "dark" ? "bg-[#202633] " : ""
       }`}
     >
-      <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center">
+      <Navbar/>
+      <div className="max-w-2xl w-2xl h-fit shadow-[0_0_10px_#cbd1cc] rounded-2xl my-5 mx-[0.5rem] p-5 flex flex-col justify-center items-center mt-20">
         <div className="flex flex-col sm:flex-row justify-center items-center gap-5">
           {/* {avator+name+username} */}
           <div className="flex flex-col items-center gap-1">
