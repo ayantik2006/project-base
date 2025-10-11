@@ -24,7 +24,7 @@ function Navbar() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   return (
-    <div className="w-full fixed top-0 h-16 border-b-2 border-gray-200 flex items-center mb-10 z-10 opacity-100">
+    <div className="w-full fixed top-0 h-16 border-b-2 border-gray-200 flex items-center mb-10 z-10 opacity-100 bg-white">
       <div className="min-sm:hidden ml-auto mr-5 flex items-center justify-between w-full">  
         <div className="ml-5">
             Logo
