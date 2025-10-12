@@ -15,6 +15,7 @@ import Feed from "./components/Feed";
 import { Navigate } from "react-router-dom";
 import Profile from "./components/Profile";
 import NotFound from "./components/NotFound";
+import Navbar from "./components/Navbar";
 
 function App() {
   const navigate = useNavigate();
@@ -47,8 +48,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/feed" element={<Feed />} />
-        <Route path="/me/profile" element={<Profile />} />
-        <Route path="/me/completeprofile" element={<Profile />} />
+        {/* <Route path="/me/profile" element={<Profile />} /> */}
+        <Route path="/me/profile" element={<Profile key={location.key} />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
       <Toaster />

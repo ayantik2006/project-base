@@ -107,8 +107,6 @@ function Navbar() {
             hover:after:scale-x-100`}
             onClick={()=>{
                 navigate("/feed");
-                console.log(location.pathname);
-                
             }}
           >
             Feed

@@ -63,6 +63,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import Navbar from "./Navbar";
+import { useLocation } from "react-router-dom";
 
 function Profile() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -98,6 +99,7 @@ function Profile() {
   const editAboutValue = useRef(null);
   const [isPresentExp, setIsPresentExp] = useState(false);
   const [isPresentEdu, setIsPresentEdu] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     fetch(backendURL + "/me/profile", {
@@ -105,8 +107,12 @@ function Profile() {
       credentials: "include",
       headers: { "Content-Type": "application/json" },
     })
-      .then((res) => res.json())
       .then((res) => {
+        // console.log(res.json());
+        return res.json();
+      })
+      .then((res) => {
+        console.log("profile info got");
         setName(res.name === "" ? "John Doe" : res.name);
         setFinalUsername(res.username === "johndoe" ? "johndoe" : res.username);
         setUsername(res.username === "johndoe" ? "johndoe" : res.username);
@@ -135,7 +141,7 @@ function Profile() {
       .catch((err) => {
         console.log(err);
       });
-  }, [backendURL, intro.length, editAboutValue, aboutValue.length]);
+  }, [backendURL, intro.length, editAboutValue, aboutValue.length,location.key]);
 
   return (
     <div
