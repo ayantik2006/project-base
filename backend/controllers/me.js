@@ -20,6 +20,7 @@ exports.nameUsername = async (req, res) => {
   if (userData.username === "johndoe" || userData.name === "") {
     return res.json({ msg: "no name username" });
   }
+  else res.json({});
 };
 
 exports.getMeProfileDetails = async (req, res) => {
