@@ -1285,7 +1285,7 @@ function Profile() {
               </form>
             </Dialog>
 
-            <div className={`flex flex-wrap shadow-[0_0_10px_#cbd1cc] rounded-lg mt-3 ml-1 ${Object.keys(skillList).length!==0?"p-2":"gap-2"}`}>
+            <div className={`flex flex-wrap gap-2 shadow-[0_0_10px_#cbd1cc] rounded-lg mt-3 ml-1 ${Object.keys(skillList).length!==0?"p-2":""}`}>
               {Object.keys(skillList).map((key) => {
                 return (
                   <div
