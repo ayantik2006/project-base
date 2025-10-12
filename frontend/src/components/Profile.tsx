@@ -358,7 +358,7 @@ function Profile() {
                   placeholder="Profile introduction"
                   required
                   id="intro"
-                  className="selection:bg-[#085fd2]"
+                  className="selection:bg-blue-500 selection:text-white"
                   ref={introInput}
                   defaultValue={intro}
                   maxLength={150}

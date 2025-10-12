@@ -38,38 +38,18 @@ function Feed() {
   }, []);
 
   return (
-    <div>
-      <>
-        <h1>Feed Page</h1>
-        <Button
-          className="m-5 cursor-pointer"
-          variant={"outline"}
-          onClick={() => {
-            fetch(backendURL + "/auth/signout", {
-              method: "POST",
-              credentials: "include",
-              headers: { "Content-Type": "application/json" },
-            })
-              .then(() => {
-                navigate("/signin");
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          }}
-        >
-          Sign out
-        </Button>
-        <Button
-          className="m-5 cursor-pointer"
-          variant={"outline"}
-          onClick={() => {
-            navigate("/me/profile");
-          }}
-        >
-          My profile
-        </Button>
-      </>
+    <div className="flex flex-col overflow-hidden">
+      <Navbar/>
+      <div className="w-full mt-[4rem] flex overflow-hidden">
+        {/* left panel  */}
+        <div className="m-3 h-[40.3rem] w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden sticky top-0"> 
+          
+        </div>
+        {/* main feed area */}
+        <div className="h-fit w-[75rem] shadow-[0_0_10px_#cbd1cc] m-3 ml-0 rounded-lg overflow-auto">
+          
+        </div>
+      </div>
     </div>
   );
 }

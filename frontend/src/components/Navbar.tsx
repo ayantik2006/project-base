@@ -36,7 +36,11 @@ function Navbar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="mt-[0.6rem] mr-2">
-            <DropdownMenuItem>Notifications</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={()=>{
+                navigate("/feed");
+            }}>Feed</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">Peers</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">Notifications</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="cursor-pointer">
@@ -44,7 +48,9 @@ function Navbar() {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer" onClick={()=>{
+                    navigate("/me/profile");
+                  }}>
                     <i className="fa-solid fa-user"></i>
                     Profile
                   </DropdownMenuItem>
@@ -89,6 +95,50 @@ function Navbar() {
             after:content-['']
             after:absolute
             after:h-[3px]
+            after:w-[2.5rem]
+            after:bottom-4
+            after:right-82
+            ${location.pathname=="/feed"?"text-green-900":""}
+            after:bg-[#9ee86f]
+            after:scale-x-0
+            after:origin-center
+            after:transition-transform
+            after:duration-300
+            hover:after:scale-x-100`}
+            onClick={()=>{
+                navigate("/feed");
+                console.log(location.pathname);
+                
+            }}
+          >
+            Feed
+          </a>
+          <a
+            id="navbar-about-us"
+            className={`cursor-pointer font-semibold
+            hover:text-[#325e17]
+            after:content-['']
+            after:absolute
+            after:h-[3px]
+            after:w-[2.5rem]
+            after:bottom-4
+            after:right-67
+            after:bg-[#9ee86f]
+            after:scale-x-0
+            after:origin-center
+            after:transition-transform
+            after:duration-300
+            hover:after:scale-x-100`}
+          >
+            Peers
+          </a>
+          <a
+            id="navbar-about-us"
+            className={`cursor-pointer font-semibold
+            hover:text-[#325e17]
+            after:content-['']
+            after:absolute
+            after:h-[3px]
             after:w-[5.6rem]
             after:bottom-4
             after:right-38
@@ -125,7 +175,9 @@ function Navbar() {
               </a>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={()=>{
+                    navigate("/me/profile");
+                  }}>
                 <i className="fa-solid fa-user "></i>
                 Profile
               </DropdownMenuItem>
