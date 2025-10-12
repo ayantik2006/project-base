@@ -43,7 +43,7 @@ function Feed() {
             .then((res) => res.json())
             .then((res) => {
               if (res.avatarLink == "")
-                setAvatarLink("../assets/default avatar.jpg");
+                setAvatarLink("");
               else setAvatarLink(res.avatarLink);
               setUsername(res.username);
               setName(res.name);
@@ -67,7 +67,7 @@ function Feed() {
         <div className="m-3 h-[40.3rem] min-w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden top-[4.8rem] sticky p-3">
           {/* avatar+name+intro */}
           <div className="flex flex-col items-center">
-            <img src={defaultAvatar} alt="avatar" className="w-[5rem] rounded-full border-4 border-[#7ac655]"/>
+            <img src={(avatarLink===""?defaultAvatar:avatarLink)} alt="avatar" className="w-[5rem] rounded-full border-4 border-[#7ac655]"/>
             <div className="flex flex-col">
               <h1>{name}</h1>
             </div>
