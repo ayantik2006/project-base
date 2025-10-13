@@ -1,6 +1,6 @@
-# 🚀 Project Base (under development)
+# 🚀 Elimics (under development)
 
-**Project Base** is a unified platform for developers and interview aspirants. It combines collaborative coding, live streaming, interactive learning, and competitive programming to help developers grow, prepare, and showcase their skills globally.
+**Elimics** is a unified platform for developers and interview aspirants. It combines collaborative coding, live streaming, interactive learning, and competitive programming to help developers grow, prepare, and showcase their skills globally.
 
 ---
 
