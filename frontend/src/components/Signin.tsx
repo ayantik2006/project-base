@@ -254,7 +254,7 @@ function Signin() {
           <p className="text-[1.1rem]">Google</p>
         </button>
         <p className="mt-3 text-gray-600">
-          New to Base?{" "}
+          New to Elimics?{" "}
           <a
             className="underline cursor-pointer font-bold"
             onClick={() => {
