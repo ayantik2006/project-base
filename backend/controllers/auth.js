@@ -21,7 +21,7 @@ const { google } = require("../lib/oauth/google.js");
 const isProduction = process.env.PRODUCTION === "true";
 
 const frontendURL = isProduction
-  ? "https://project-base-frontend.onrender.com"
+  ? "https://elimics.com"
   : "http://localhost:5173";
 
 exports.getUser = (req, res) => {};
