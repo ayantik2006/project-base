@@ -28,7 +28,7 @@ if(isProduction){
 }
 
 const frontendURL = isProduction
-  ? "https://project-base-frontend.onrender.com"
+  ? "https://elimics.com"
   : "http://localhost:5173";
 app.use(
   cors({

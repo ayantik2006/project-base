@@ -42,8 +42,7 @@ function Feed() {
           })
             .then((res) => res.json())
             .then((res) => {
-              if (res.avatarLink == "")
-                setAvatarLink("");
+              if (res.avatarLink == "") setAvatarLink("");
               else setAvatarLink(res.avatarLink);
               setUsername(res.username);
               setName(res.name);
@@ -62,15 +61,30 @@ function Feed() {
   return (
     <div className="flex flex-col ">
       <Navbar />
-      <div className="w-full mt-[4rem] flex max-sm:flex-col max-sm:w-full max-sm:h-[10rem]">
+      <div className="w-full mt-[4rem] flex max-sm:flex-col max-sm:w-full max-sm:h-fit">
         {/* left panel  */}
-        <div className="m-3 h-[40.3rem] min-w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden top-[4.8rem] sticky p-3">
+        <div className="m-3 h-[40.3rem] min-w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden top-[4.8rem] sticky p-3 flex flex-col h-fit">
           {/* avatar+name+intro */}
-          <div className="flex flex-col items-center">
-            <img src={(avatarLink===""?defaultAvatar:avatarLink)} alt="avatar" className="w-[5rem] rounded-full border-4 border-[#7ac655]"/>
-            <div className="flex flex-col">
-              <h1>{name}</h1>
+          <div className="flex flex-col items-center cursor-pointer mt-2 border-b-2 pb-4">
+            <img
+              src={avatarLink === "" ? defaultAvatar : avatarLink}
+              alt="avatar"
+              className="w-[5rem] rounded-full border-4 border-[#7ac655]"
+            />
+            <div className="flex flex-col justify-center items-center">
+              <h1 className="font-bold text-[1.3rem]">{name}</h1>
+              <p className="text-[#858996] mt-[-0.4rem]">@{username}</p>
             </div>
+          </div>
+          <div className="flex flex-col gap-4 p-4">
+            <Button variant={"outline"} className="cursor-pointer duration-300 hover:bg-[#7ac655] peer">
+              <i className="fa-solid fa-code"></i>
+              Collaborate and Code
+            </Button>
+            <Button variant={"outline"} className="cursor-pointer duration-300 hover:bg-[#7ac655]">
+              <i className="fa-solid fa-play"></i>
+              Online compiler
+            </Button>
           </div>
         </div>
         {/* right panel */}
