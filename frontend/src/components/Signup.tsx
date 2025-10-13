@@ -34,7 +34,7 @@ function Signup() {
               navigate(location.pathname);
             }}
           >
-            Logo
+            Elimics
           </a>
         </div>
         <div className="flex gap-6 items-center mr-10" id="nav-elements">
@@ -176,7 +176,7 @@ function Signup() {
         }}
       >
         <h2 className="text-gray-900 text-2xl font-bold mb-4 align-center">
-          Create your Base Account
+          Create your Elimics Account
         </h2>
         <p className="mb-3 text-gray-600 outline-none">
           Enter your email to create your account

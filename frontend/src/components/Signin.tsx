@@ -33,7 +33,7 @@ function Signin() {
               navigate(location.pathname);
             }}
           >
-            Logo
+            Elimics
           </a>
         </div>
         <div className="flex gap-6 items-center mr-10" id="nav-elements">
@@ -163,7 +163,7 @@ function Signin() {
         }}
       >
         <h2 className="text-gray-900 text-2xl font-bold mb-4 align-center text-[1.4rem]">
-          Sign in to your Base Account
+          Sign in to your Elimics Account
         </h2>
         <p className="mb-3 text-gray-600 outline-none">
           Enter your email to sign in
