@@ -106,14 +106,14 @@ function Feed() {
                   Create Post
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="flex flex-col">
                 <DialogHeader>
                   <DialogTitle>Create a new post!</DialogTitle>
                 </DialogHeader>
                 <div className="h-[25rem] rounded-3xl">
                 <CreatePostEditor/>
                 </div>
-                <Button className="mt-[-2.5rem] bg-[#7ac655] hover:bg-[#6cae4b] cursor-pointer duration-300" >
+                <Button className="mt-[rem] bg-[#7ac655] hover:bg-[#6cae4b] cursor-pointer duration-300" >
                   <i className="fa-solid fa-paper-plane"></i>
                   Publish post
                 </Button>
