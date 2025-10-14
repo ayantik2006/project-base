@@ -10,6 +10,15 @@ import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 import Navbar from "./Navbar";
 import defaultAvatar from "../assets/default avatar.jpg";
+import CreatePostEditor from "./CreatePostEditor";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 function Feed() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -17,8 +26,6 @@ function Feed() {
   const [avatarLink, setAvatarLink] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [intro, setIntro] = useState("");
-  const didRun = useRef(false);
 
   useEffect(() => {
     fetch(backendURL + "/me/name-username", {
@@ -63,7 +70,7 @@ function Feed() {
       <Navbar />
       <div className="w-full mt-[4rem] flex max-sm:flex-col max-sm:w-full max-sm:h-fit">
         {/* left panel  */}
-        <div className="m-3 h-[40.3rem] min-w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden top-[4.8rem] sticky p-3 flex flex-col h-fit">
+        <div className="m-3 h-fit min-w-[20rem] shadow-[0_0_10px_#cbd1cc] rounded-lg overflow-hidden top-[4.8rem] sticky p-3 flex flex-col">
           {/* avatar+name+intro */}
           <div className="flex flex-col items-center cursor-pointer mt-2 border-b-2 pb-4">
             <img
@@ -77,18 +84,47 @@ function Feed() {
             </div>
           </div>
           <div className="flex flex-col gap-4 p-4">
-            <Button variant={"outline"} className="cursor-pointer duration-300 hover:bg-[#7ac655] peer">
+            <Button
+              variant={"outline"}
+              className="cursor-pointer duration-300 hover:bg-[#7ac655] peer"
+            >
               <i className="fa-solid fa-code"></i>
               Collaborate and Code
             </Button>
-            <Button variant={"outline"} className="cursor-pointer duration-300 hover:bg-[#7ac655]">
+            <Button
+              variant={"outline"}
+              className="cursor-pointer duration-300 hover:bg-[#7ac655]"
+            >
               <i className="fa-solid fa-play"></i>
-              Online compiler
+              Code runner
             </Button>
+
+            <Dialog>
+              <DialogTrigger className="flex items-center gap-2 cursor-pointer">
+                <Button className="w-full bg-[#7ac655] hover:bg-[#6cae4b] duration-300 cursor-pointer">
+                  <i className="fa-solid fa-plus"></i>
+                  Create Post
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create a new post!</DialogTitle>
+                </DialogHeader>
+                <div className="h-[25rem] rounded-3xl">
+                <CreatePostEditor/>
+                </div>
+                <Button className="mt-[-2.5rem] bg-[#7ac655] hover:bg-[#6cae4b] cursor-pointer duration-300" >
+                  <i className="fa-solid fa-paper-plane"></i>
+                  Publish post
+                </Button>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
-        {/* right panel */}
-        <div className="h-fit w-[75rem] shadow-[0_0_10px_#cbd1cc] m-3 ml-0 rounded-lg overflow-auto"></div>
+        <div>
+          {/* right panel */}
+          <div className="h-fit shadow-[0_0_10px_#cbd1cc] m-3 ml-0 rounded-lg overflow-auto"></div>
+        </div>
       </div>
     </div>
   );

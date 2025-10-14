@@ -18,17 +18,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Input } from "./ui/input";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { useState } from "react";
 
 function Navbar() {
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [openSearch, setOpenSearch] = useState(false);
 
   return (
     <div className="w-full fixed top-0 h-16 border-b-2 border-gray-200 flex items-center mb-10 z-10 opacity-100 bg-white">
-      <div className="min-sm:hidden ml-auto mr-5 flex items-center justify-between w-full">  
-        <div className="ml-5">
-            Logo
-        </div>      
+      <div className="min-sm:hidden ml-auto mr-5 flex items-center justify-between w-full">
+        <div className="ml-5">Logo</div>
         <DropdownMenu>
           <DropdownMenuTrigger className="rounded-full hover:bg-gray-200 hover:cursor-pointer duration-300 w-8 h-8 outline-none">
             <button className="rounded-full hover:bg-gray-200 hover:cursor-pointer duration-300 w-8 h-8 outline-none">
@@ -36,11 +48,20 @@ function Navbar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="mt-[0.6rem] mr-2">
-            <DropdownMenuItem className="cursor-pointer" onClick={()=>{
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => {
                 navigate("/feed");
-            }}>Feed</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">Peers</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">Notifications</DropdownMenuItem>
+              }}
+            >
+              Feed
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Peers
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Notifications
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger className="cursor-pointer">
@@ -48,9 +69,12 @@ function Navbar() {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem className="cursor-pointer" onClick={()=>{
-                    navigate("/me/profile");
-                  }}>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => {
+                      navigate("/me/profile");
+                    }}
+                  >
                     <i className="fa-solid fa-user"></i>
                     Profile
                   </DropdownMenuItem>
@@ -87,7 +111,19 @@ function Navbar() {
 
       <div className="max-sm:hidden flex justify-between w-full">
         <div className="ml-5">Logo</div>
-        <div className="flex gap-6 items-center mr-10 ">
+        <div className="flex gap-6 items-center mr-10">
+          <div className="flex items-center justify-center mr-5 cursor-pointer p-3 border-2 rounded-[0.5rem] w-22 h-8 pl-[1.8rem] border-[#cbc9c9] text-[#cbc9c9]">
+            <i className="fa-solid fa-magnifying-glass relative left-[-32%] text-[0.9rem] text-[#979696]"></i>
+            <p
+              className="ml-[-0.3rem]"
+              defaultValue={`Search`}
+              onClick={() => {
+                setOpenSearch(!openSearch);
+              }}
+            >
+              Search
+            </p>
+          </div>
           <a
             id="navbar-about-us"
             className={`cursor-pointer font-semibold
@@ -98,15 +134,15 @@ function Navbar() {
             after:w-[2.5rem]
             after:bottom-4
             after:right-82
-            ${location.pathname=="/feed"?"text-green-900":""}
+            ${location.pathname == "/feed" ? "text-green-900" : ""}
             after:bg-[#9ee86f]
             after:scale-x-0
             after:origin-center
             after:transition-transform
             after:duration-300
             hover:after:scale-x-100`}
-            onClick={()=>{
-                navigate("/feed");
+            onClick={() => {
+              navigate("/feed");
             }}
           >
             Feed
@@ -173,9 +209,12 @@ function Navbar() {
               </a>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem className="cursor-pointer" onClick={()=>{
-                    navigate("/me/profile");
-                  }}>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  navigate("/me/profile");
+                }}
+              >
                 <i className="fa-solid fa-user "></i>
                 Profile
               </DropdownMenuItem>
