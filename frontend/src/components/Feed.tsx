@@ -15,7 +15,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
+  DialogHeader, 
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -110,13 +110,10 @@ function Feed() {
                 <DialogHeader>
                   <DialogTitle>Create a new post!</DialogTitle>
                 </DialogHeader>
-                <div className="h-[25rem] rounded-3xl">
+                <div className="h-fit rounded-3xl">
                 <CreatePostEditor/>
                 </div>
-                <Button className="mt-[rem] bg-[#7ac655] hover:bg-[#6cae4b] cursor-pointer duration-300" >
-                  <i className="fa-solid fa-paper-plane"></i>
-                  Publish post
-                </Button>
+                
               </DialogContent>
             </Dialog>
           </div>
